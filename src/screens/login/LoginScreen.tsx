@@ -1,9 +1,9 @@
-import { SafeAreaView } from "react-native-safe-area-context";
-import { Text } from "react-native";
-import { useEffect } from "react";
-import { useAuth } from "../../common/context/AuthContext";
-import { useNavigation } from "@react-navigation/native";
-import { NavigationProps } from "../../types/navigation";
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { Text } from 'react-native';
+import { useEffect } from 'react';
+import { useAuth } from '../../common/context/AuthContext';
+import { useNavigation } from '@react-navigation/native';
+import { NavigationProps } from '../../types/navigation';
 
 export default function LoginScreen() {
   const navigation = useNavigation<NavigationProps>();
@@ -21,5 +21,5 @@ export default function LoginScreen() {
     <SafeAreaView>
       <Text>Login Screen</Text>
     </SafeAreaView>
-  )
+  );
 }

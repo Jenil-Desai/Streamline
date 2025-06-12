@@ -1,4 +1,4 @@
-import { ZodIssue } from "zod";
+import { ZodIssue } from 'zod';
 
 export interface RegisterResponse {
   success: boolean;

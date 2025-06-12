@@ -1,7 +1,7 @@
-import { View, Text, StyleSheet } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { useAuth } from "../../common/context/AuthContext";
-import { useTheme } from "../../common/context/ThemeContext";
+import { View, Text, StyleSheet } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { useAuth } from '../../common/context/AuthContext';
+import { useTheme } from '../../common/context/ThemeContext';
 
 export default function IndexScreen() {
   const { isAuthenticated, isUserOnboarded, decodedToken } = useAuth();
@@ -17,10 +17,10 @@ export default function IndexScreen() {
 
         <View style={styles.infoCard}>
           <Text style={[styles.infoText, { color: theme.text }]}>
-            Authentication Status: {isAuthenticated ? "Logged In" : "Not Logged In"}
+            Authentication Status: {isAuthenticated ? 'Logged In' : 'Not Logged In'}
           </Text>
           <Text style={[styles.infoText, { color: theme.text }]}>
-            Onboarding Status: {isUserOnboarded() ? "Completed" : "Not Completed"}
+            Onboarding Status: {isUserOnboarded() ? 'Completed' : 'Not Completed'}
           </Text>
           {decodedToken && (
             <Text style={[styles.infoText, { color: theme.text }]}>
