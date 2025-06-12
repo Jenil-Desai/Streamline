@@ -2,6 +2,7 @@ import { View, Text, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAuth } from '../../common/context/AuthContext';
 import { useTheme } from '../../common/context/ThemeContext';
+import { Header } from '../../common/components/headers';
 
 export default function IndexScreen() {
   const { isAuthenticated, isUserOnboarded, decodedToken } = useAuth();
@@ -9,6 +10,9 @@ export default function IndexScreen() {
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: theme.background }]}>
+      <Header
+        title="Home"
+      />
       <View style={styles.content}>
         <Text style={[styles.title, { color: theme.text }]}>Welcome To Home Screen</Text>
         <Text style={[styles.subtitle, { color: theme.textSecondary }]}>

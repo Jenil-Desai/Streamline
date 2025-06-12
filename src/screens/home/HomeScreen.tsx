@@ -2,6 +2,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import IndexScreen from './Index';
 import { Bookmark, Home, Search, User } from 'lucide-react-native';
 import { useTheme } from '../../common/context/ThemeContext';
+import ProfileScreen from '../profile/ProfileScreen';
 
 const Tab = createBottomTabNavigator();
 
@@ -12,7 +13,6 @@ export default function HomeScreen(): React.JSX.Element {
     <Tab.Navigator
       initialRouteName="Home"
       screenOptions={{
-        animation: "shift",
         headerShown: false,
         tabBarStyle: {
           backgroundColor: theme.background,
@@ -68,7 +68,7 @@ export default function HomeScreen(): React.JSX.Element {
       />
       <Tab.Screen
         name="Profile"
-        component={IndexScreen}
+        component={ProfileScreen}
         options={{
           tabBarShowLabel: false,
           tabBarIcon: ({ focused, size }) => (
