@@ -1,24 +1,31 @@
-import { Image, StyleSheet, Text, View, StatusBar } from 'react-native';
+import { Image, StyleSheet, Text, View } from 'react-native';
 import Button from '../../common/components/buttons/Button';
 import { font } from '../../common/utils/font-family';
 import { useTheme } from '../../common/context/ThemeContext';
 import { useNavigation } from '@react-navigation/native';
 import { NavigationProps } from '../../types/navigation';
+import { useAuth } from '../../common/context/AuthContext';
+import { useEffect } from 'react';
 
 
 export default function WelcomeScreen() {
-  const { theme, isDark } = useTheme();
   const navigation = useNavigation<NavigationProps>();
+  const { isAuthenticated, isUserOnboarded } = useAuth();
+  const { theme } = useTheme();
+
+  useEffect(() => {
+    if (isAuthenticated && isUserOnboarded()) {
+      navigation.replace('Onboard');
+    } else if (isAuthenticated) {
+      navigation.replace('Home');
+    }
+  });
 
   return (
     <View style={[
       styles.container,
       { backgroundColor: theme.background },
     ]}>
-      <StatusBar
-        barStyle={isDark ? 'light-content' : 'dark-content'}
-        backgroundColor={theme.background}
-      />
       <Image source={require('../../assets/images/welcome-image.png')} style={styles.image} />
       <View style={styles.contentContainer}>
         <Text style={[
@@ -28,8 +35,8 @@ export default function WelcomeScreen() {
           Your Ultimate Movie Companion
         </Text>
         <View style={styles.buttonContainer}>
-          <Button text="Dive Into Your Watch History" variant="primary" onClick={() => navigation.navigate('Login')} />
-          <Button text="New Here? Create an Account" variant="secondary" onClick={() => navigation.navigate('Register')} />
+          <Button text="Dive Into Your Watch History" variant="primary" onClick={() => navigation.replace('Login')} />
+          <Button text="New Here? Create an Account" variant="secondary" onClick={() => navigation.replace('Register')} />
         </View>
       </View>
     </View>
