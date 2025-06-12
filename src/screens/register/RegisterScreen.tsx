@@ -1,18 +1,18 @@
-import { SafeAreaView } from "react-native-safe-area-context";
-import { StyleSheet, View } from "react-native";
-import { NavigationProps } from "../../types/navigation";
-import { useNavigation } from "@react-navigation/native";
-import { useAuth } from "../../common/context/AuthContext";
-import { useTheme } from "../../common/context/ThemeContext";
-import { useEffect, useState } from "react";
-import { Alert } from "react-native";
-import Input from "../../common/components/inputs/Input";
-import { ArrowLeft, Key, Mail, User } from "lucide-react-native";
-import { Header } from "../../common/components/headers";
-import Button from "../../common/components/buttons/Button";
-import { BASE_URL } from "../../common/constants/config";
-import axios from "axios";
-import { RegisterResponse } from "../../types/auth/register";
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { StyleSheet, View } from 'react-native';
+import { NavigationProps } from '../../types/navigation';
+import { useNavigation } from '@react-navigation/native';
+import { useAuth } from '../../common/context/AuthContext';
+import { useTheme } from '../../common/context/ThemeContext';
+import { useEffect, useState } from 'react';
+import { Alert } from 'react-native';
+import Input from '../../common/components/inputs/Input';
+import { ArrowLeft, Key, Mail, User } from 'lucide-react-native';
+import { Header } from '../../common/components/headers';
+import Button from '../../common/components/buttons/Button';
+import { BASE_URL } from '../../common/constants/config';
+import axios from 'axios';
+import { RegisterResponse } from '../../types/auth/register';
 
 export default function RegisterScreen() {
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -128,28 +128,28 @@ export default function RegisterScreen() {
       <View style={styles.contentContainer}>
         <View style={styles.inputContainer}>
           <View style={styles.nameContainer}>
-            <View style={{ width: '48%' }}>
+            <View style={styles.input}>
               <Input
                 textContentType="name"
                 label="First Name"
                 value={firstName}
                 onChangeText={(text) => {
                   setFirstName(text);
-                  if (text.trim()) setFirstNameError('');
+                  if (text.trim()) { setFirstNameError(''); }
                 }}
                 variant="outlined"
                 leftIcon={<User color={theme.text} size={20} />}
                 error={firstNameError}
               />
             </View>
-            <View style={{ width: '48%' }}>
+            <View style={styles.input}>
               <Input
                 textContentType="name"
                 label="Last Name"
                 value={lastName}
                 onChangeText={(text) => {
                   setLastName(text);
-                  if (text.trim()) setLastNameError('');
+                  if (text.trim()) { setLastNameError(''); }
                 }}
                 variant="outlined"
                 leftIcon={<User color={theme.text} size={20} />}
@@ -165,7 +165,7 @@ export default function RegisterScreen() {
             value={email}
             onChangeText={(text) => {
               setEmail(text);
-              if (text.trim()) setEmailError('');
+              if (text.trim()) { setEmailError(''); }
             }}
             variant="outlined"
             leftIcon={<Mail color={theme.text} size={20} />}
@@ -179,7 +179,7 @@ export default function RegisterScreen() {
             value={password}
             onChangeText={(text) => {
               setPassword(text);
-              if (text) setPasswordError('');
+              if (text) { setPasswordError(''); }
             }}
             variant="outlined"
             leftIcon={<Key color={theme.text} size={20} />}
@@ -194,8 +194,8 @@ export default function RegisterScreen() {
             value={confirmPassword}
             onChangeText={(text) => {
               setConfirmPassword(text);
-              if (text) setConfirmPasswordError('');
-              if (text && password === text) setConfirmPasswordError('');
+              if (text) { setConfirmPasswordError(''); }
+              if (text && password === text) { setConfirmPasswordError(''); }
             }}
             variant="outlined"
             leftIcon={<Key color={theme.text} size={20} />}
@@ -219,7 +219,7 @@ export default function RegisterScreen() {
       </View>
 
     </SafeAreaView>
-  )
+  );
 }
 
 const styles = StyleSheet.create({
@@ -239,7 +239,10 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     width: '100%',
   },
+  input: {
+    width: '48%',
+  },
   btnContainer: {
     gap: 10,
-  }
-})
+  },
+});

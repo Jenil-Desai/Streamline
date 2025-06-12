@@ -10,8 +10,9 @@ export default function HomeScreen(): React.JSX.Element {
 
   return (
     <Tab.Navigator
-      initialRouteName='Home'
+      initialRouteName="Home"
       screenOptions={{
+        animation: "shift",
         headerShown: false,
         tabBarStyle: {
           backgroundColor: theme.background,
@@ -21,7 +22,7 @@ export default function HomeScreen(): React.JSX.Element {
       }}
     >
       <Tab.Screen
-        name='Home'
+        name="Home"
         component={IndexScreen}
         options={{
           tabBarShowLabel: false,
@@ -36,7 +37,7 @@ export default function HomeScreen(): React.JSX.Element {
         }}
       />
       <Tab.Screen
-        name='Search'
+        name="Search"
         component={IndexScreen}
         options={{
           tabBarShowLabel: false,
@@ -51,7 +52,7 @@ export default function HomeScreen(): React.JSX.Element {
         }}
       />
       <Tab.Screen
-        name='Watchlist'
+        name="Watchlist"
         component={IndexScreen}
         options={{
           tabBarShowLabel: false,
@@ -66,7 +67,7 @@ export default function HomeScreen(): React.JSX.Element {
         }}
       />
       <Tab.Screen
-        name='Profile'
+        name="Profile"
         component={IndexScreen}
         options={{
           tabBarShowLabel: false,

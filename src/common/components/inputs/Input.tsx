@@ -159,9 +159,9 @@ export default function Input({
   };
 
   const getLabelColor = (): string => {
-    if (error) return theme.error;
-    if (disabled) return isDark ? COLORS.GRAY_500 : COLORS.GRAY_600;
-    if (isFocused) return theme.primary;
+    if (error) { return theme.error; }
+    if (disabled) { return isDark ? COLORS.GRAY_500 : COLORS.GRAY_600; }
+    if (isFocused) { return theme.primary; }
     return theme.textSecondary;
   };
 

@@ -100,8 +100,8 @@ export default function OnboardScreen() {
       }, {
         headers: {
           Authorization: `Bearer ${token}`,
-        }
-      })
+        },
+      });
 
       const responseData = response.data;
       if (responseData.success && responseData.token) {
