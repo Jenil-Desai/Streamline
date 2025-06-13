@@ -1,7 +1,11 @@
-import React, { useMemo } from 'react';
-import { TouchableOpacity, Image, Text, StyleSheet, ViewStyle, LayoutChangeEvent } from 'react-native';
+import React, { useMemo, useState } from 'react';
+import { TouchableOpacity, Image, Text, StyleSheet, ViewStyle, LayoutChangeEvent, View } from 'react-native';
+import { Bookmark } from 'lucide-react-native';
 import { ThemeColors } from '../../context/ThemeContext';
 import { MediaItem } from '../../../types/media';
+import { useWatchlist } from '../../context/WatchlistContext';
+import WatchlistModal from '../watchlist/WatchlistModal';
+import { MediaTypeEnum } from '../../../types/user/watchlistItem';
 
 interface MediaCardProps {
   item: MediaItem;
@@ -11,8 +15,11 @@ interface MediaCardProps {
 }
 
 export const MediaCard: React.FC<MediaCardProps> = ({ item, onPress, theme, style }) => {
-  const [width, setWidth] = React.useState(120);
+  const [width, setWidth] = useState(120);
   const posterHeight = useMemo(() => width * 1.5, [width]);
+  const [modalVisible, setModalVisible] = useState(false);
+  const { isItemInWatchlistLocal, removeItemFromWatchlist, refreshWatchlists } = useWatchlist();
+  const isInWatchlist = isItemInWatchlistLocal(item.id, MediaTypeEnum.MOVIE);
 
   const onLayout = (event: LayoutChangeEvent) => {
     const { width: cardWidth } = event.nativeEvent.layout;
@@ -21,31 +28,62 @@ export const MediaCard: React.FC<MediaCardProps> = ({ item, onPress, theme, styl
     }
   };
 
+  const handleBookmarkPress = async () => {
+    if (isInWatchlist) {
+      const success = await removeItemFromWatchlist(item, MediaTypeEnum.MOVIE);
+      if (success) {
+        await refreshWatchlists();
+      }
+    } else {
+      setModalVisible(true);
+    }
+  };
+
   return (
-    <TouchableOpacity
-      style={[styles.mediaCard, style]}
-      onPress={() => onPress(item)}
-      activeOpacity={0.7}
-      onLayout={onLayout}
-    >
-      <Image
-        source={{ uri: item.poster_path }}
-        style={[styles.poster, { width: width, height: posterHeight }]}
-        resizeMode="cover"
+    <View style={[styles.mediaCard, style]} onLayout={onLayout}>
+      <TouchableOpacity
+        style={styles.cardContent}
+        onPress={() => onPress(item)}
+        activeOpacity={0.7}
+      >
+        <View style={styles.posterContainer}>
+          <Image
+            source={{ uri: item.poster_path }}
+            style={[styles.poster, { width: width, height: posterHeight }]}
+            resizeMode="cover"
+          />
+          <TouchableOpacity
+            style={[styles.bookmarkButton, { backgroundColor: isInWatchlist ? theme.primary : 'rgba(0, 0, 0, 0.5)' }]}
+            onPress={handleBookmarkPress}
+            activeOpacity={0.7}
+          >
+            <Bookmark size={16} color="#FFFFFF" fill={isInWatchlist ? "#FFFFFF" : "none"} />
+          </TouchableOpacity>
+        </View>
+        <Text
+          style={[styles.mediaTitle, { color: theme.text }]}
+          numberOfLines={1}
+        >
+          {item.title}
+        </Text>
+        <Text
+          style={[styles.mediaDate, { color: theme.textSecondary }]}
+          numberOfLines={1}
+        >
+          {item.release_date}
+        </Text>
+      </TouchableOpacity>
+
+      <WatchlistModal
+        visible={modalVisible}
+        onClose={() => {
+          setModalVisible(false);
+          // No need to check status; context will update isInWatchlist
+        }}
+        item={item}
+        theme={theme}
       />
-      <Text
-        style={[styles.mediaTitle, { color: theme.text }]}
-        numberOfLines={1}
-      >
-        {item.title}
-      </Text>
-      <Text
-        style={[styles.mediaDate, { color: theme.textSecondary }]}
-        numberOfLines={1}
-      >
-        {item.release_date}
-      </Text>
-    </TouchableOpacity>
+    </View>
   );
 };
 
@@ -54,9 +92,25 @@ const styles = StyleSheet.create({
     width: 120,
     marginRight: 12,
   },
+  cardContent: {
+    flex: 1,
+  },
+  posterContainer: {
+    position: 'relative',
+  },
   poster: {
     borderRadius: 8,
     backgroundColor: '#e0e0e0',
+  },
+  bookmarkButton: {
+    position: 'absolute',
+    top: 8,
+    right: 8,
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   mediaTitle: {
     fontSize: 14,

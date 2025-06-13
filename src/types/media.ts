@@ -11,6 +11,7 @@ export interface MediaItem {
   title: string;
   poster_path: string;
   release_date: string;
+  media_type: 'movie' | 'tv';
 }
 
 /**

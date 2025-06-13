@@ -1,20 +1,13 @@
 /**
  * Category related type definitions
  */
-import { MediaItem, MediaType } from './media';
-
-/**
- * Extended MediaItem with optional media_type field
- */
-export interface CategoryMediaItem extends MediaItem {
-  media_type?: MediaType;
-}
+import { MediaItem } from './media';
 
 /**
  * Category API response structure
  */
 export interface CategoryListResponse {
-  results: CategoryMediaItem[];
+  results: MediaItem[];
   pagination: {
     page: number;
     total_pages: number;

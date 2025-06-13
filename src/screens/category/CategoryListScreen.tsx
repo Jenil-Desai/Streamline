@@ -11,7 +11,7 @@ import { useAuth } from '../../common/context/AuthContext';
 import { RootStackParamList, NavigationProps } from '../../types/navigation';
 import { getCategoryTitle, getCategoryApiPath } from '../../common/utils/category-utils';
 import { fetchCategoryData } from '../../common/services/categoryService';
-import { CategoryMediaItem } from '../../types/category';
+import { MediaItem } from '../../types/media';
 
 type CategoryListRouteProps = RouteProp<RootStackParamList, 'CategoryList'>;
 
@@ -22,7 +22,7 @@ export default function CategoryListScreen() {
   const { token } = useAuth();
   const navigation = useNavigation<NavigationProps>();
 
-  const [data, setData] = useState<CategoryMediaItem[]>([]);
+  const [data, setData] = useState<MediaItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [page, setPage] = useState(1);
@@ -81,7 +81,7 @@ export default function CategoryListScreen() {
     }
   }, [loadingMore, page, totalPages, loadCategoryData]);
 
-  const handleMediaPress = useCallback((item: CategoryMediaItem) => {
+  const handleMediaPress = useCallback((item: MediaItem) => {
     navigation.navigate('MediaDetail', { id: item.id });
   }, [navigation]);
 

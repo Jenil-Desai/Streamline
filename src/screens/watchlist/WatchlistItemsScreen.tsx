@@ -46,7 +46,7 @@ export default function WatchlistItemsScreen() {
 
   // Calculate grid dimensions
   const { width } = Dimensions.get('window');
-  const numColumns = 3;
+  const numColumns = 2;
   const gap = 16;
   const cardWidth = (width - (gap * (numColumns + 1))) / numColumns;
 
@@ -136,16 +136,6 @@ export default function WatchlistItemsScreen() {
     }
   };
 
-  const getMediaTypeIcon = (mediaType: MediaTypeEnum) => {
-    switch (mediaType) {
-      case MediaTypeEnum.TV:
-        return <Tv size={14} color={theme.textSecondary} />;
-      case MediaTypeEnum.MOVIE:
-      default:
-        return <Film size={14} color={theme.textSecondary} />;
-    }
-  };
-
   const renderItem = ({ item }: { item: WatchlistItem }) => {
     return (
       <View style={[styles.itemContainer, { width: cardWidth }]}>
@@ -155,42 +145,42 @@ export default function WatchlistItemsScreen() {
           theme={theme}
           style={styles.mediaCard}
         />
-
-        {/* Additional info container */}
-        <View style={[styles.infoContainer, { backgroundColor: isDark ? theme.secondary : COLORS.GRAY_100 }]}>
-          {/* Status and media type row */}
+        <View style={[
+          styles.infoContainer,
+          { backgroundColor: isDark ? theme.secondary : COLORS.GRAY_100, borderColor: theme.border }
+        ]}>
           <View style={styles.infoRow}>
-            <View style={styles.infoChip}>
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
               {getStatusIcon(item.status)}
-              <Text style={[styles.infoText, { color: getStatusColor(item.status), marginLeft: 4 }]}>
+              <Text style={[styles.infoText, { color: getStatusColor(item.status), marginLeft: 4, marginRight: 10 }]}>
                 {getStatusText(item.status)}
               </Text>
             </View>
-
-            <View style={styles.infoChip}>
-              {getMediaTypeIcon(item.mediaType)}
-              <Text style={[styles.infoText, { color: theme.textSecondary, marginLeft: 4 }]}>
-                {item.mediaType === MediaTypeEnum.TV ? 'TV Show' : 'Movie'}
-              </Text>
-            </View>
-          </View>
-
-          {/* Scheduled at */}
-          {item.scheduledAt && (
-            <View style={styles.infoRow}>
-              <Calendar size={14} color={theme.textSecondary} style={styles.infoIcon} />
+            {item.mediaType === MediaTypeEnum.TV ? (
+              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <Tv size={13} color={theme.textSecondary} style={styles.infoIcon} />
+                <Text style={[styles.infoText, { color: theme.textSecondary, marginRight: 10 }]}>TV Show</Text>
+              </View>
+            ) : (
+              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <Film size={13} color={theme.textSecondary} style={styles.infoIcon} />
+                <Text style={[styles.infoText, { color: theme.textSecondary, marginRight: 10 }]}>Movie</Text>
+              </View>
+            )}
+            {item.scheduledAt && (
+              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <Calendar size={13} color={theme.textSecondary} style={styles.infoIcon} />
+                <Text style={[styles.infoText, { color: theme.textSecondary, marginRight: 10 }]}>
+                  {moment(item.scheduledAt).format('MMM DD, YYYY')}
+                </Text>
+              </View>
+            )}
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <Clock size={13} color={theme.textSecondary} style={styles.infoIcon} />
               <Text style={[styles.infoText, { color: theme.textSecondary }]}>
-                {moment(item.scheduledAt).format('MMM DD, YYYY')}
+                Added {moment(item.createdAt).format('MMM DD')}
               </Text>
             </View>
-          )}
-
-          {/* Added date */}
-          <View style={styles.infoRow}>
-            <Clock size={14} color={theme.textSecondary} style={styles.infoIcon} />
-            <Text style={[styles.infoText, { color: theme.textSecondary }]}>
-              Added {moment(item.createdAt).format('MMM DD')}
-            </Text>
           </View>
         </View>
       </View>
@@ -279,26 +269,21 @@ const styles = StyleSheet.create({
   },
   infoContainer: {
     marginTop: 8,
-    padding: 10,
+    padding: 8,
     borderRadius: 8,
+    borderWidth: 1,
   },
   infoRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 6,
-  },
-  infoChip: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginRight: 12,
+    flexDirection: 'column',
+    gap: 10,
   },
   infoIcon: {
-    marginRight: 4,
+    marginRight: 3,
   },
   infoText: {
-    fontSize: 12,
+    fontSize: 11,
     fontFamily: font.medium(),
-    lineHeight: 16,
+    lineHeight: 15,
   },
   emptyContainer: {
     justifyContent: 'center',

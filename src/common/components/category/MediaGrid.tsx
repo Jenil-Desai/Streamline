@@ -10,10 +10,10 @@ import {
 } from 'react-native';
 import { MediaCard } from '../media';
 import { ThemeColors } from '../../context/ThemeContext';
-import { CategoryMediaItem } from '../../../types/category';
+import { MediaItem } from '../../../types/media';
 
 interface MediaGridProps {
-  data: CategoryMediaItem[];
+  data: MediaItem[];
   loading: boolean;
   refreshing: boolean;
   loadingMore: boolean;
@@ -22,7 +22,7 @@ interface MediaGridProps {
   categoryTitle: string;
   onRefresh: () => void;
   onLoadMore: () => void;
-  onPressItem: (item: CategoryMediaItem) => void;
+  onPressItem: (item: MediaItem) => void;
 }
 
 const { width } = Dimensions.get('window');
@@ -58,7 +58,7 @@ export const MediaGrid: React.FC<MediaGridProps> = ({
     );
   }
 
-  const renderItem = ({ item }: { item: CategoryMediaItem }) => (
+  const renderItem = ({ item }: { item: MediaItem }) => (
     <View style={styles.cardWrapper}>
       <MediaCard
         item={item}
