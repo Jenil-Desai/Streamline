@@ -1,15 +1,38 @@
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Header } from '../../common/components/headers';
 import { SettingsOption } from '../../common/components/SettingsOption';
-import { ArrowLeft, HelpCircle, Info, Moon, User } from 'lucide-react-native';
+import { ArrowLeft, HelpCircle, Info, LogOut, Moon, User } from 'lucide-react-native';
 import { useTheme } from '../../common/context/ThemeContext';
 import { useNavigation } from '@react-navigation/native';
 import { NavigationProps } from '../../types/navigation';
-import { View, Linking, StyleSheet } from 'react-native';
+import { View, Linking, StyleSheet, Alert } from 'react-native';
+import { useAuth } from '../../common/context/AuthContext';
 
 export default function SettingsScreen() {
-  const { theme } = useTheme();
   const navigation = useNavigation<NavigationProps>();
+  const { logout } = useAuth();
+  const { theme } = useTheme();
+
+  function handleLogout() {
+    Alert.alert(
+      'Confirm Logout',
+      'Are you sure you want to logout?',
+      [
+        {
+          text: 'Cancel',
+          style: 'cancel',
+        },
+        {
+          text: 'Logout',
+          onPress: () => {
+            logout();
+            navigation.replace('Login');
+          },
+          style: 'destructive',
+        },
+      ]
+    );
+  }
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: theme.background }]}>
@@ -38,6 +61,11 @@ export default function SettingsScreen() {
           icon={<HelpCircle color={theme.text} />}
           title="Help & Support"
           onPress={() => Linking.openURL('https://github.com/Jenil-Desai/Streamline')}
+        />
+        <SettingsOption
+          icon={<LogOut color={theme.text} />}
+          title='Log Out'
+          onPress={() => handleLogout()}
         />
       </View>
     </SafeAreaView>

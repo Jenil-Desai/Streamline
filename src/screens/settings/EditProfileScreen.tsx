@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Header } from '../../common/components/headers';
-import { ArrowLeft, Check, MapPin, Mail, User, Flag } from 'lucide-react-native';
+import { ArrowLeft, Check, Mail, User, Flag } from 'lucide-react-native';
 import { useTheme } from '../../common/context/ThemeContext';
 import { useNavigation } from '@react-navigation/native';
 import { NavigationProps } from '../../types/navigation';
@@ -13,7 +13,6 @@ import { BASE_URL } from '../../common/constants/config';
 import { useAuth } from '../../common/context/AuthContext';
 import { Profile, ProfileResponse } from '../../types/user/profile';
 import { font } from '../../common/utils/font-family';
-import { COLORS } from '../../common/constants/colors';
 import CountryPicker, { Country, CountryCode } from 'react-native-country-picker-modal';
 
 export default function EditProfileScreen() {
@@ -27,7 +26,7 @@ export default function EditProfileScreen() {
     last_name: '',
     email: '',
     bio: '',
-    country: 'US'
+    country: 'US',
   });
   const [countryCode, setCountryCode] = useState<CountryCode>('US');
   const [showCountryPicker, setShowCountryPicker] = useState(false);
@@ -36,7 +35,7 @@ export default function EditProfileScreen() {
   const fetchData = useCallback(async () => {
     try {
       const response = await axios.get<ProfileResponse>(`${BASE_URL}/user/profile`, {
-        headers: { Authorization: `Bearer ${token}` }
+        headers: { Authorization: `Bearer ${token}` },
       });
 
       const data = response.data;
@@ -47,7 +46,7 @@ export default function EditProfileScreen() {
           last_name: data.profile.last_name,
           email: data.profile.email,
           bio: data.profile.bio || '',
-          country: data.profile.country || 'US'
+          country: data.profile.country || 'US',
         });
 
         // Set the country code from profile or default to US
@@ -127,7 +126,7 @@ export default function EditProfileScreen() {
   const updateField = (field: string, value: string) => {
     setFormData(prevData => ({
       ...prevData,
-      [field]: value
+      [field]: value,
     }));
   };
 

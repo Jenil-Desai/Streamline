@@ -58,7 +58,7 @@ export default function Input({
     } else if (!isFocused) {
       animateLabelToCenter();
     }
-  }, [value]);
+  });
 
   const handleFocus = () => {
     setIsFocused(true);
@@ -212,7 +212,7 @@ export default function Input({
                   left: leftIcon ? (variant === 'outlined' ? 40 : 36) : 16,
                   zIndex: 1,
                   transform: [{
-                    translateY: value || isFocused ? 0 : 2
+                    translateY: value || isFocused ? 0 : 2,
                   }],
                 },
                 labelStyle,
