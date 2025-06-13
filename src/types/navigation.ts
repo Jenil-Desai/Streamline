@@ -12,6 +12,8 @@ export type RootStackParamList = {
   EditProfile: undefined;
   AboutApp: undefined;
   ThemeSelection: undefined;
+  MediaDetail: { id: number };
+  CategoryList: { category: string };
 };
 
 export type NavigationProps = NativeStackNavigationProp<RootStackParamList>;

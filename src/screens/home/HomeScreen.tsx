@@ -1,16 +1,60 @@
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, RefreshControl } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useEffect, useState, useCallback } from 'react';
 import { useAuth } from '../../common/context/AuthContext';
 import { useTheme } from '../../common/context/ThemeContext';
 import { Header } from '../../common/components/headers';
 import { Search } from 'lucide-react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NavigationProps } from '../../types/navigation';
+import { MediaSection } from '../../common/components/media';
+import { HomeData, MediaItem } from '../../types/media';
+import axios from 'axios';
+import { BASE_URL } from '../../common/constants/config';
 
 export default function HomeScreen() {
-  const { isAuthenticated, isUserOnboarded, decodedToken } = useAuth();
+  const { token } = useAuth();
   const { theme } = useTheme();
   const navigation = useNavigation<NavigationProps>();
+  const [homeData, setHomeData] = useState<HomeData | null>(null);
+  const [refreshing, setRefreshing] = useState(false);
+
+  const fetchHomeData = useCallback(async () => {
+    try {
+      const response = await axios.get<HomeData>(`${BASE_URL}/home`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setHomeData(response.data);
+    } catch (error) {
+      console.error('Error fetching home data:', error);
+    }
+  }, [token]);
+
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+    await fetchHomeData();
+    setRefreshing(false);
+  }, [fetchHomeData]);
+
+  useEffect(() => {
+    fetchHomeData();
+  }, [fetchHomeData]);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      fetchHomeData();
+    }, 300000);
+
+    return () => clearInterval(interval);
+  }, [fetchHomeData]);
+
+  const handleMediaPress = useCallback((item: MediaItem) => {
+    navigation.navigate('MediaDetail', { id: item.id });
+  }, [navigation]);
+
+  const handleSeeMore = useCallback((category: string) => {
+    navigation.navigate('CategoryList', { category });
+  }, [navigation]);
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: theme.background }]}>
@@ -19,26 +63,91 @@ export default function HomeScreen() {
         rightIcon={<Search color={theme.text} />}
         onRightPress={() => navigation.navigate('Search')}
       />
-      <View style={styles.content}>
-        <Text style={[styles.title, { color: theme.text }]}>Welcome To Home Screen</Text>
-        <Text style={[styles.subtitle, { color: theme.textSecondary }]}>
-          You have successfully navigated to the Home tab!
-        </Text>
 
-        <View style={styles.infoCard}>
-          <Text style={[styles.infoText, { color: theme.text }]}>
-            Authentication Status: {isAuthenticated ? 'Logged In' : 'Not Logged In'}
-          </Text>
-          <Text style={[styles.infoText, { color: theme.text }]}>
-            Onboarding Status: {isUserOnboarded() ? 'Completed' : 'Not Completed'}
-          </Text>
-          {decodedToken && (
-            <Text style={[styles.infoText, { color: theme.text }]}>
-              User ID: {decodedToken.id}
+      <ScrollView
+        contentContainerStyle={styles.scrollContainer}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            tintColor={theme.text}
+          />
+        }
+      >
+        {!homeData ? (
+          <View style={styles.loadingContainer}>
+            <Text style={[styles.loadingText, { color: theme.textSecondary }]}>
+              Loading content...
             </Text>
-          )}
-        </View>
-      </View>
+          </View>
+        ) : (
+          <>
+            <MediaSection
+              title="Trending Movies"
+              data={homeData.trending_movies}
+              onSeeMore={() => handleSeeMore('trending_movies')}
+              onPressItem={handleMediaPress}
+              theme={theme}
+            />
+
+            <MediaSection
+              title="Trending TV Shows"
+              data={homeData.trending_tv}
+              onSeeMore={() => handleSeeMore('trending_tv')}
+              onPressItem={handleMediaPress}
+              theme={theme}
+            />
+
+            <MediaSection
+              title="Popular Movies"
+              data={homeData.popular_movies}
+              onSeeMore={() => handleSeeMore('popular_movies')}
+              onPressItem={handleMediaPress}
+              theme={theme}
+            />
+
+            <MediaSection
+              title="Popular TV Shows"
+              data={homeData.popular_tv}
+              onSeeMore={() => handleSeeMore('popular_tv')}
+              onPressItem={handleMediaPress}
+              theme={theme}
+            />
+
+            <MediaSection
+              title="Upcoming Movies"
+              data={homeData.upcoming_movies}
+              onSeeMore={() => handleSeeMore('upcoming_movies')}
+              onPressItem={handleMediaPress}
+              theme={theme}
+            />
+
+            <MediaSection
+              title="On Air TV Shows"
+              data={homeData.on_air_tv}
+              onSeeMore={() => handleSeeMore('on_air_tv')}
+              onPressItem={handleMediaPress}
+              theme={theme}
+            />
+
+            <MediaSection
+              title="Top Rated Movies"
+              data={homeData.top_rated_movies}
+              onSeeMore={() => handleSeeMore('top_rated_movies')}
+              onPressItem={handleMediaPress}
+              theme={theme}
+            />
+
+            <MediaSection
+              title="Top Rated TV Shows"
+              data={homeData.top_rated_tv}
+              onSeeMore={() => handleSeeMore('top_rated_tv')}
+              onPressItem={handleMediaPress}
+              theme={theme}
+            />
+          </>
+        )}
+      </ScrollView>
     </SafeAreaView>
   );
 }
@@ -47,30 +156,16 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  content: {
+  scrollContainer: {
+    paddingBottom: 20,
+  },
+  loadingContainer: {
     flex: 1,
-    padding: 20,
-    alignItems: 'center',
     justifyContent: 'center',
+    alignItems: 'center',
+    paddingVertical: 40,
   },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 12,
-  },
-  subtitle: {
+  loadingText: {
     fontSize: 16,
-    marginBottom: 32,
-    textAlign: 'center',
-  },
-  infoCard: {
-    width: '100%',
-    borderRadius: 12,
-    padding: 16,
-    marginTop: 24,
-  },
-  infoText: {
-    fontSize: 14,
-    marginBottom: 8,
   },
 });
