@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import { RefreshCw } from 'lucide-react-native';
+import { AlertCircle, RefreshCw } from 'lucide-react-native';
 import { ThemeColors } from '../../../context/ThemeContext';
 import { COLORS } from '../../../constants/colors';
 
@@ -17,11 +17,11 @@ const HomeError: React.FC<HomeErrorProps> = ({ message, onRetry, theme }) => {
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
       <View style={styles.contentContainer}>
-        {/* <Image
-          source={require('../../../../assets/images/error-illustration.png')}
-          style={styles.illustration}
-          resizeMode="contain"
-        /> */}
+        <AlertCircle
+          color={theme.error}
+          size={48}
+          strokeWidth={1.5}
+        />
 
         <Text style={[styles.errorTitle, { color: theme.text }]}>
           Oops! Something went wrong
