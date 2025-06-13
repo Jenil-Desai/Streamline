@@ -5,7 +5,6 @@ import {
   Text,
   FlatList,
   RefreshControl,
-  TouchableOpacity,
   Dimensions
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -198,13 +197,6 @@ export default function WatchlistItemsScreen() {
       <Text style={[styles.emptyText, { color: theme.textSecondary }]}>
         This watchlist is empty. Add movies or TV shows to start tracking.
       </Text>
-      <TouchableOpacity
-        style={[styles.addButton, { backgroundColor: theme.primary }]}
-        activeOpacity={0.8}
-        onPress={() => console.log('Add item to watchlist')}
-      >
-        <Text style={[styles.addButtonText, { color: COLORS.WHITE }]}>Add Media</Text>
-      </TouchableOpacity>
     </View>
   );
 
@@ -312,16 +304,5 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginBottom: 28,
     lineHeight: 22,
-  },
-  addButton: {
-    paddingVertical: 14,
-    paddingHorizontal: 24,
-    borderRadius: 8,
-    minWidth: 160,
-    alignItems: 'center',
-  },
-  addButtonText: {
-    fontSize: 16,
-    fontFamily: font.semiBold(),
-  },
+  }
 });

@@ -1,5 +1,5 @@
 import React, { createContext, useState, useContext, useEffect, useCallback } from 'react';
-import { getUserWatchlists, addToWatchlist, removeFromWatchlist, checkIfInWatchlist, createWatchlist } from '../services/watchlistService';
+import { getUserWatchlists, addToWatchlist, removeFromWatchlist, checkIfInWatchlist, createWatchlist, updateWatchlist as updateWatchlistService, deleteWatchlist as deleteWatchlistService } from '../services/watchlistService';
 import { MediaItem } from '../../types/media';
 import { useAuth } from './AuthContext';
 import { MediaTypeEnum, WatchlistItemStatus } from '../../types/user/watchlistItem';
@@ -22,6 +22,8 @@ interface WatchlistContextType {
   selectWatchlist: (watchlistId: string) => void;
   refreshWatchlists: () => Promise<void>;
   createNewWatchlist: (name: string) => Promise<{ success: boolean; watchlist?: any; error?: string }>;
+  updateWatchlist: (id: string, name: string) => Promise<{ success: boolean; watchlist?: any; error?: string }>;
+  deleteWatchlist: (id: string) => Promise<{ success: boolean; message?: string; error?: string }>;
 }
 
 const WatchlistContext = createContext<WatchlistContextType | undefined>(undefined);
@@ -193,6 +195,59 @@ export const WatchlistContextProvider: React.FC<WatchlistContextProviderProps> =
     }
   };
 
+  /**
+   * Updates an existing watchlist
+   * @param id - ID of the watchlist to update
+   * @param name - New name for the watchlist
+   * @returns Object containing success status and watchlist data or error message
+   */
+  const updateWatchlist = async (id: string, name: string) => {
+    if (!token) {
+      return { success: false, error: 'You must be logged in to update a watchlist' };
+    }
+
+    try {
+      const response = await updateWatchlistService(id, name, token);
+
+      if (response.success) {
+        // Refresh the watchlists to reflect changes
+        await refreshWatchlists();
+      }
+      return response;
+    } catch (err) {
+      console.error('Error updating watchlist:', err);
+      return { success: false, error: 'Failed to update watchlist' };
+    }
+  };
+
+  /**
+   * Deletes a watchlist and all its items
+   * @param id - ID of the watchlist to delete
+   * @returns Object containing success status and message or error
+   */
+  const deleteWatchlist = async (id: string) => {
+    if (!token) {
+      return { success: false, error: 'You must be logged in to delete a watchlist' };
+    }
+
+    try {
+      const response = await deleteWatchlistService(id, token);
+
+      if (response.success) {
+        // If the deleted watchlist was selected, clear the selection
+        if (selectedWatchlistId === id) {
+          setSelectedWatchlistId(null);
+        }
+        // Refresh the watchlists to reflect changes
+        await refreshWatchlists();
+      }
+      return response;
+    } catch (err) {
+      console.error('Error deleting watchlist:', err);
+      return { success: false, error: 'Failed to delete watchlist' };
+    }
+  };
+
   const value = {
     watchlists,
     selectedWatchlistId,
@@ -205,6 +260,8 @@ export const WatchlistContextProvider: React.FC<WatchlistContextProviderProps> =
     selectWatchlist,
     refreshWatchlists,
     createNewWatchlist,
+    updateWatchlist,
+    deleteWatchlist,
   };
 
   return (

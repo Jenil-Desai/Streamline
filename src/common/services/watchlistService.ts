@@ -61,6 +61,64 @@ export const createWatchlist = async (
 };
 
 /**
+ * Updates an existing watchlist
+ * @param id - ID of the watchlist to update
+ * @param name - New name for the watchlist
+ * @param token - Authentication token
+ * @returns Promise with watchlist update response
+ */
+export const updateWatchlist = async (
+  id: string,
+  name: string,
+  token: string | null
+): Promise<{ success: boolean; watchlist?: Watchlist; error?: string }> => {
+  try {
+    if (!token) {
+      return { success: false, error: 'Authentication required' };
+    }
+
+    const response = await axios.put(
+      `${BASE_URL}/watchlists/${id}`,
+      { name },
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    );
+
+    return response.data;
+  } catch (error) {
+    console.error('Error in updateWatchlist:', error);
+    return { success: false, error: 'Failed to update watchlist' };
+  }
+};
+
+/**
+ * Deletes a watchlist and all its items
+ * @param id - ID of the watchlist to delete
+ * @param token - Authentication token
+ * @returns Promise with deletion response
+ */
+export const deleteWatchlist = async (
+  id: string,
+  token: string | null
+): Promise<{ success: boolean; message?: string; error?: string }> => {
+  try {
+    if (!token) {
+      return { success: false, error: 'Authentication required' };
+    }
+
+    const response = await axios.delete(`${BASE_URL}/watchlists/${id}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+
+    return response.data;
+  } catch (error) {
+    console.error('Error in deleteWatchlist:', error);
+    return { success: false, error: 'Failed to delete watchlist' };
+  }
+};
+
+/**
  * Adds an item to a watchlist
  * @param watchlistId - ID of the watchlist
  * @param tmdbId - TMDB ID of the media item

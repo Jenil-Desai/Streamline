@@ -14,7 +14,7 @@ import { Watchlist, WatchlistsResponse } from '../../types/user/watchlist';
 import WatchlistSkeletonScreen from './WatchlistSkeletonScreen';
 import { useNavigation } from '@react-navigation/native';
 import { NavigationProps } from '../../types/navigation';
-import { AddWatchlistDialog } from '../../common/components/watchlist';
+import { AddWatchlistDialog, WatchlistActions } from '../../common/components/watchlist';
 
 export default function WatchlistScreen() {
   const [watchlists, setWatchlists] = useState<Watchlist[]>([]);
@@ -88,6 +88,11 @@ export default function WatchlistScreen() {
             </Text>
           </View>
         </View>
+        <WatchlistActions
+          watchlist={item}
+          onUpdate={() => fetchWatchlists()}
+          onDelete={() => fetchWatchlists()}
+        />
       </View>
     </TouchableOpacity>
   );
@@ -175,6 +180,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     padding: 16,
+    justifyContent: 'space-between',
   },
   iconContainer: {
     width: 48,
@@ -187,6 +193,7 @@ const styles = StyleSheet.create({
   watchlistTextContainer: {
     flex: 1,
     justifyContent: 'center',
+    marginRight: 8,
   },
   watchlistName: {
     fontSize: 17,
