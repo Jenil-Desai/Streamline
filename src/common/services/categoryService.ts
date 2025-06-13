@@ -18,7 +18,7 @@ export const fetchCategoryData = async (
     const response = await axios.get<CategoryListResponse>(
       `${BASE_URL}${apiPath}?page=${page}`,
       {
-        headers: { Authorization: `Bearer ${token}` }
+        headers: { Authorization: `Bearer ${token}` },
       }
     );
 

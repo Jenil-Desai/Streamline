@@ -13,7 +13,7 @@ export function getCategoryTitle(category: string): string {
   const specialTitles: CategoryTitleMap = {
     'on_air_tv': 'On Air TV Shows',
     'top_rated_tv': 'Top Rated TV Shows',
-    'top_rated_movies': 'Top Rated Movies'
+    'top_rated_movies': 'Top Rated Movies',
   };
 
   if (specialTitles[category]) {

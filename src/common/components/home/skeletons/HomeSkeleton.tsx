@@ -19,7 +19,7 @@ const SkeletonItem: React.FC<SkeletonItemProps> = ({
   borderRadius = 4,
   style,
   animatedOpacity,
-  backgroundColor
+  backgroundColor,
 }) => (
   <Animated.View
     style={[
@@ -43,7 +43,7 @@ interface SectionHeaderSkeletonProps {
 
 const SectionHeaderSkeleton: React.FC<SectionHeaderSkeletonProps> = ({
   animatedOpacity,
-  backgroundColor
+  backgroundColor,
 }) => (
   <View style={styles.sectionHeader}>
     <SkeletonItem
@@ -71,7 +71,7 @@ interface MediaRowSkeletonProps {
 const MediaRowSkeleton: React.FC<MediaRowSkeletonProps> = ({
   animatedOpacity,
   backgroundColor,
-  itemCount = 5
+  itemCount = 5,
 }) => (
   <View>
     <ScrollView
@@ -202,7 +202,7 @@ const styles = StyleSheet.create({
   },
   mediaDateSkeleton: {
     marginTop: 4,
-  }
+  },
 });
 
 export default HomeSkeleton;

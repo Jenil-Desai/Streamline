@@ -18,7 +18,7 @@ export const MediaSection: React.FC<MediaSectionProps> = ({
   data,
   onSeeMore,
   onPressItem,
-  theme
+  theme,
 }) => {
   if (!data || data.length === 0) { return null; }
 

@@ -141,7 +141,7 @@ const styles = StyleSheet.create({
   },
   dateSkeleton: {
     marginTop: 4,
-  }
+  },
 });
 
 export default CategorySkeleton;

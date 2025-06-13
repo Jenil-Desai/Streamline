@@ -4,6 +4,7 @@ import { useTheme } from '../../common/context/ThemeContext';
 import ProfileScreenIndex from '../profile/ProfileScreenIndex';
 import SearchScreen from '../search/SearchScreen';
 import HomeStack from './HomeStack';
+import WatchlistScreen from '../watchlist/WatchlistScreen';
 
 const Tab = createBottomTabNavigator();
 
@@ -60,7 +61,7 @@ export default function HomeScreenIndex(): React.JSX.Element {
       />
       <Tab.Screen
         name="Watchlist"
-        component={HomeStack}
+        component={WatchlistScreen}
         options={{
           tabBarShowLabel: false,
           tabBarIcon: ({ focused, size }) => (

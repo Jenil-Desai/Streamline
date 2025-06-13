@@ -6,7 +6,7 @@ import {
   StyleSheet,
   ActivityIndicator,
   Dimensions,
-  RefreshControl
+  RefreshControl,
 } from 'react-native';
 import { MediaCard } from '../media';
 import { ThemeColors } from '../../context/ThemeContext';
@@ -40,7 +40,7 @@ export const MediaGrid: React.FC<MediaGridProps> = ({
   categoryTitle,
   onRefresh,
   onLoadMore,
-  onPressItem
+  onPressItem,
 }) => {
   if (loading) {
     return (
@@ -154,5 +154,5 @@ const styles = StyleSheet.create({
   },
   mediaCard: {
     width: '100%',
-  }
+  },
 });
