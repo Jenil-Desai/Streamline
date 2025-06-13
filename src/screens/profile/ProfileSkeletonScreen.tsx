@@ -1,16 +1,99 @@
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { ScrollView, StyleSheet, View } from 'react-native';
+import { ScrollView, StyleSheet, View, Animated } from 'react-native';
+import React, { useEffect, useRef } from 'react';
 import { Header } from '../../common/components/headers';
 import { Settings } from 'lucide-react-native';
 import { useTheme } from '../../common/context/ThemeContext';
 import { useNavigation } from '@react-navigation/native';
 import { NavigationProps } from '../../types/navigation';
-import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
 import { COLORS } from '../../common/constants/colors';
 
+// Reusable skeleton item component
+const SkeletonItem: React.FC<{
+  width: number | string;
+  height: number;
+  borderRadius?: number;
+  style?: object;
+  animatedOpacity: Animated.AnimatedInterpolation<string | number>;
+  backgroundColor: string;
+}> = ({ width, height, borderRadius = 4, style, animatedOpacity, backgroundColor }) => (
+  <Animated.View
+    style={[
+      styles.skeletonItem,
+      {
+        width,
+        height,
+        borderRadius,
+        opacity: animatedOpacity,
+        backgroundColor,
+      },
+      style,
+    ]}
+  />
+);
+
+// Skeleton card component
+const SkeletonCard: React.FC<{
+  width: number | string;
+  height: number;
+  children?: React.ReactNode;
+  style?: object;
+  borderColor: string;
+}> = ({ width, height, children, style, borderColor }) => (
+  <View
+    style={[
+      styles.skeletonCard,
+      {
+        width,
+        height,
+        borderColor,
+      },
+      style,
+    ]}
+  >
+    {children}
+  </View>
+);
+
 export default function ProfileSkeletonScreen() {
-  const { theme } = useTheme();
+  const { theme, isDark } = useTheme();
   const navigation = useNavigation<NavigationProps>();
+
+  // Animation value for skeleton pulse effect
+  const pulseAnim = useRef(new Animated.Value(0)).current;
+
+  // Start animation when component mounts
+  useEffect(() => {
+    const animatePulse = () => {
+      Animated.sequence([
+        Animated.timing(pulseAnim, {
+          toValue: 1,
+          duration: 800,
+          useNativeDriver: true,
+        }),
+        Animated.timing(pulseAnim, {
+          toValue: 0,
+          duration: 800,
+          useNativeDriver: true,
+        }),
+      ]).start(() => {
+        animatePulse();
+      });
+    };
+
+    animatePulse();
+    return () => pulseAnim.stopAnimation();
+  }, [pulseAnim]);
+
+  // Interpolate opacity for pulse effect
+  const opacityInterpolate = pulseAnim.interpolate({
+    inputRange: [0, 1],
+    outputRange: [0.3, 0.6],
+  });
+
+  // Determine skeleton colors based on theme
+  const skeletonColor = isDark ? COLORS.GRAY_700 : COLORS.GRAY_300;
+  const cardBorderColor = isDark ? COLORS.GRAY_700 : COLORS.GRAY_500;
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: theme.background }]}>
@@ -23,72 +106,151 @@ export default function ProfileSkeletonScreen() {
         style={styles.contentContainer}
         showsVerticalScrollIndicator={false}
       >
-        <SkeletonPlaceholder>
-          {/* Avatar and User Info Section */}
-          <View style={styles.avatarContainer}>
-            <SkeletonPlaceholder.Item width={130} height={130} borderRadius={130 / 2} />
-            <View style={styles.primaryTextContainer}>
-              <SkeletonPlaceholder.Item width={200} height={22} borderRadius={4} />
-              <SkeletonPlaceholder.Item marginTop={5} width={150} height={16} borderRadius={4} />
-              <SkeletonPlaceholder.Item marginTop={5} width={100} height={14} borderRadius={4} />
-            </View>
+        {/* Avatar and User Info Section */}
+        <View style={styles.avatarContainer}>
+          <SkeletonItem
+            width={130}
+            height={130}
+            borderRadius={130 / 2}
+            animatedOpacity={opacityInterpolate}
+            backgroundColor={skeletonColor}
+          />
+          <View style={styles.primaryTextContainer}>
+            <SkeletonItem
+              width={200}
+              height={22}
+              animatedOpacity={opacityInterpolate}
+              backgroundColor={skeletonColor}
+            />
+            <SkeletonItem
+              width={150}
+              height={16}
+              style={styles.smallMarginTop}
+              animatedOpacity={opacityInterpolate}
+              backgroundColor={skeletonColor}
+            />
+            <SkeletonItem
+              width={100}
+              height={14}
+              style={styles.smallMarginTop}
+              animatedOpacity={opacityInterpolate}
+              backgroundColor={skeletonColor}
+            />
           </View>
+        </View>
 
-          {/* Bio Section */}
-          <View style={styles.secondaryTextContainer}>
-            <SkeletonPlaceholder.Item width={50} height={23} borderRadius={4} />
-            <SkeletonPlaceholder.Item marginTop={13} width={'100%'} height={16} borderRadius={4} />
-            <SkeletonPlaceholder.Item marginTop={8} width={'90%'} height={16} borderRadius={4} />
-            <SkeletonPlaceholder.Item marginTop={8} width={'75%'} height={16} borderRadius={4} />
-          </View>
+        {/* Bio Section */}
+        <View style={styles.secondaryTextContainer}>
+          <SkeletonItem
+            width={50}
+            height={23}
+            animatedOpacity={opacityInterpolate}
+            backgroundColor={skeletonColor}
+          />
+          <SkeletonItem
+            width="100%"
+            height={16}
+            style={styles.mediumMarginTop}
+            animatedOpacity={opacityInterpolate}
+            backgroundColor={skeletonColor}
+          />
+          <SkeletonItem
+            width="90%"
+            height={16}
+            style={styles.smallMarginTop}
+            animatedOpacity={opacityInterpolate}
+            backgroundColor={skeletonColor}
+          />
+          <SkeletonItem
+            width="75%"
+            height={16}
+            style={styles.smallMarginTop}
+            animatedOpacity={opacityInterpolate}
+            backgroundColor={skeletonColor}
+          />
+        </View>
 
-          {/* Stats Section */}
-          <View style={styles.secondaryTextContainer}>
-            <SkeletonPlaceholder.Item width={50} height={23} borderRadius={4} />
+        {/* Stats Section */}
+        <View style={styles.secondaryTextContainer}>
+          <SkeletonItem
+            width={50}
+            height={23}
+            animatedOpacity={opacityInterpolate}
+            backgroundColor={skeletonColor}
+          />
 
-            <View style={styles.sectionContent}>
-              {/* Movies and Shows Cards - Row */}
-              <View style={styles.statCard}>
-                {/* Movies Card */}
-                <SkeletonPlaceholder.Item
-                  width={'47%'}
-                  height={120}
-                  borderRadius={8}
-                  borderWidth={0.5}
-                  borderColor={COLORS.GRAY_500}
-                >
-                  <SkeletonPlaceholder.Item margin={10} width={'70%'} height={18} borderRadius={4} />
-                  <SkeletonPlaceholder.Item margin={10} width={'40%'} height={18} borderRadius={4} />
-                </SkeletonPlaceholder.Item>
-
-                {/* Shows Card */}
-                <SkeletonPlaceholder.Item
-                  width={'47%'}
-                  height={120}
-                  borderRadius={8}
-                  borderWidth={0.5}
-                  borderColor={COLORS.GRAY_500}
-                >
-                  <SkeletonPlaceholder.Item margin={10} width={'70%'} height={18} borderRadius={4} />
-                  <SkeletonPlaceholder.Item margin={10} width={'40%'} height={18} borderRadius={4} />
-                </SkeletonPlaceholder.Item>
-              </View>
-
-              {/* Watch Time Card */}
-              <SkeletonPlaceholder.Item
-                width={'100%'}
+          <View style={styles.sectionContent}>
+            {/* Movies and Shows Cards - Row */}
+            <View style={styles.statCard}>
+              {/* Movies Card */}
+              <SkeletonCard
+                width="47%"
                 height={120}
-                borderRadius={8}
-                borderWidth={0.5}
-                borderColor={COLORS.GRAY_500}
-                marginTop={20}
+                borderColor={cardBorderColor}
               >
-                <SkeletonPlaceholder.Item margin={10} width={'50%'} height={18} borderRadius={4} />
-                <SkeletonPlaceholder.Item margin={10} width={'30%'} height={18} borderRadius={4} />
-              </SkeletonPlaceholder.Item>
+                <SkeletonItem
+                  width="70%"
+                  height={18}
+                  style={styles.cardMargin}
+                  animatedOpacity={opacityInterpolate}
+                  backgroundColor={skeletonColor}
+                />
+                <SkeletonItem
+                  width="40%"
+                  height={18}
+                  style={styles.cardMargin}
+                  animatedOpacity={opacityInterpolate}
+                  backgroundColor={skeletonColor}
+                />
+              </SkeletonCard>
+
+              {/* Shows Card */}
+              <SkeletonCard
+                width="47%"
+                height={120}
+                borderColor={cardBorderColor}
+              >
+                <SkeletonItem
+                  width="70%"
+                  height={18}
+                  style={styles.cardMargin}
+                  animatedOpacity={opacityInterpolate}
+                  backgroundColor={skeletonColor}
+                />
+                <SkeletonItem
+                  width="40%"
+                  height={18}
+                  style={styles.cardMargin}
+                  animatedOpacity={opacityInterpolate}
+                  backgroundColor={skeletonColor}
+                />
+              </SkeletonCard>
             </View>
+
+            {/* Watch Time Card */}
+            <SkeletonCard
+              width="100%"
+              height={120}
+              style={styles.topMargin}
+              borderColor={cardBorderColor}
+            >
+              <SkeletonItem
+                width="50%"
+                height={18}
+                style={styles.cardMargin}
+                animatedOpacity={opacityInterpolate}
+                backgroundColor={skeletonColor}
+              />
+              <SkeletonItem
+                width="30%"
+                height={18}
+                style={styles.cardMargin}
+                animatedOpacity={opacityInterpolate}
+                backgroundColor={skeletonColor}
+              />
+            </SkeletonCard>
           </View>
-        </SkeletonPlaceholder>
+        </View>
       </ScrollView>
     </SafeAreaView>
   );
@@ -126,5 +288,25 @@ const styles = StyleSheet.create({
   statCard: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+  },
+  skeletonItem: {
+    backgroundColor: COLORS.GRAY_300,
+  },
+  skeletonCard: {
+    borderRadius: 8,
+    borderWidth: 0.5,
+    borderColor: COLORS.GRAY_500,
+  },
+  smallMarginTop: {
+    marginTop: 5,
+  },
+  mediumMarginTop: {
+    marginTop: 13,
+  },
+  cardMargin: {
+    margin: 10,
+  },
+  topMargin: {
+    marginTop: 20,
   },
 });
