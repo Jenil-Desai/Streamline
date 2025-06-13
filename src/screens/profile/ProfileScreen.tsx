@@ -1,38 +1,44 @@
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Header } from '../../common/components/headers';
 import { StyleSheet, View, Text, ScrollView, RefreshControl } from 'react-native';
-import { ArrowLeft } from 'lucide-react-native';
+import { Settings } from 'lucide-react-native';
 import { useTheme } from '../../common/context/ThemeContext';
 import { useNavigation } from '@react-navigation/native';
 import { font } from '../../common/utils/font-family';
 import axios from 'axios';
 import { BASE_URL } from '../../common/constants/config';
 import { useAuth } from '../../common/context/AuthContext';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Profile, ProfileResponse } from '../../types/user/profile';
 import moment from 'moment';
 import { COLORS } from '../../common/constants/colors';
+import { NavigationProps } from '../../types/navigation';
+import ProfileSkeletonScreen from './ProfileSkeletonScreen';
 
 export default function ProfileScreen() {
   const [user, setUser] = useState<Profile | null>(null);
   const [refreshing, setRefreshing] = useState(false);
-  const navigation = useNavigation();
+  const navigation = useNavigation<NavigationProps>();
   const { token } = useAuth();
   const { theme } = useTheme();
 
-  async function fetchData() {
-    const response = await axios.get<ProfileResponse>(`${BASE_URL}/user/profile`, { headers: { Authorization: `Bearer ${token}` } });
-    const data = response.data;
-    if (data.success && data.profile) {
-      setUser(data.profile);
+  const fetchData = useCallback(async () => {
+    try {
+      const response = await axios.get<ProfileResponse>(`${BASE_URL}/user/profile`, { headers: { Authorization: `Bearer ${token}` } });
+      const data = response.data;
+      if (data.success && data.profile) {
+        setUser(data.profile);
+      }
+    } catch (error) {
+      console.error('Error fetching profile:', error);
     }
-  }
+  }, [token]);
 
-  const onRefresh = () => {
+  const onRefresh = useCallback(async () => {
     setRefreshing(true);
-    fetchData();
+    await fetchData();
     setRefreshing(false);
-  };
+  }, [fetchData]);
 
   useEffect(() => {
     fetchData();
@@ -40,20 +46,11 @@ export default function ProfileScreen() {
     const dataInterval = setInterval(() => fetchData(), 900000);
 
     return () => clearInterval(dataInterval);
-  });
+  }, [fetchData]);
 
   if (!user) {
     return (
-      <SafeAreaView style={[styles.container, { backgroundColor: theme.background }]}>
-        <Header
-          title="Profile"
-          leftIcon={<ArrowLeft color={theme.text} />}
-          onLeftPress={() => navigation.goBack()}
-        />
-        <View style={styles.contentContainer}>
-          <Text style={{ color: theme.text }}>Loading...</Text>
-        </View>
-      </SafeAreaView>
+      <ProfileSkeletonScreen />
     );
   }
 
@@ -61,10 +58,10 @@ export default function ProfileScreen() {
     <SafeAreaView style={[styles.container, { backgroundColor: theme.background }]}>
       <Header
         title="Profile"
-        leftIcon={<ArrowLeft color={theme.text} />}
-        onLeftPress={() => navigation.goBack()}
+        rightIcon={<Settings color={theme.text} />}
+        onRightPress={() => navigation.navigate('Settings')}
       />
-      <ScrollView style={styles.contentContainer} refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}>
+      <ScrollView style={styles.contentContainer} refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />} showsVerticalScrollIndicator={false}>
         <View style={styles.avatarContainer}>
           <View style={[styles.avatar, { backgroundColor: theme.primary }]}>
             <Text style={styles.avatarText}>{user.first_name[0] + user.last_name[0]}</Text>
@@ -102,7 +99,7 @@ export default function ProfileScreen() {
         </View>
       </ScrollView>
     </SafeAreaView>
-  )
+  );
 }
 
 const styles = StyleSheet.create({
@@ -111,7 +108,6 @@ const styles = StyleSheet.create({
   },
   contentContainer: {
     flex: 1,
-    paddingTop: 20,
     paddingRight: 20,
     paddingLeft: 20,
     paddingBottom: 0,
@@ -182,5 +178,5 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontFamily: font.medium(),
     textAlign: 'left',
-  }
+  },
 });
