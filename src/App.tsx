@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 
 import { ThemeProvider } from './common/context/ThemeContext';
 import { AuthProvider } from './common/context/AuthContext';
-import { WatchlistContextProvider } from './common/context/WatchlistContext';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useColorScheme, AppState, AppStateStatus } from 'react-native';
@@ -52,32 +51,30 @@ function MainApp(): React.JSX.Element {
   return (
     <AuthProvider>
       <ThemeProvider initialTheme={themeType} key={`theme-${colorScheme}-${themeType}`}>
-        <WatchlistContextProvider>
-          <NavigationContainer>
-            <Stack.Navigator initialRouteName="Welcome" screenOptions={{ headerShown: false }}>
-              <Stack.Screen
-                name="Welcome"
-                component={WelcomeScreen}
-              />
-              <Stack.Screen
-                name="Register"
-                component={RegisterScreen}
-              />
-              <Stack.Screen
-                name="Onboard"
-                component={OnboardScreen}
-              />
-              <Stack.Screen
-                name="Login"
-                component={LoginScreen}
-              />
-              <Stack.Screen
-                name="Home"
-                component={HomeScreenIndex}
-              />
-            </Stack.Navigator>
-          </NavigationContainer>
-        </WatchlistContextProvider>
+        <NavigationContainer>
+          <Stack.Navigator initialRouteName="Welcome" screenOptions={{ headerShown: false }}>
+            <Stack.Screen
+              name="Welcome"
+              component={WelcomeScreen}
+            />
+            <Stack.Screen
+              name="Register"
+              component={RegisterScreen}
+            />
+            <Stack.Screen
+              name="Onboard"
+              component={OnboardScreen}
+            />
+            <Stack.Screen
+              name="Login"
+              component={LoginScreen}
+            />
+            <Stack.Screen
+              name="Home"
+              component={HomeScreenIndex}
+            />
+          </Stack.Navigator>
+        </NavigationContainer>
       </ThemeProvider>
     </AuthProvider>
   );

@@ -62,6 +62,6 @@ export interface Genre {
  * Media type enum
  */
 export enum MediaType {
-  MOVIE = 'MOVIE',
-  TV = 'TV'
+  MOVIE = 'movie',
+  TV = 'tv'
 }
