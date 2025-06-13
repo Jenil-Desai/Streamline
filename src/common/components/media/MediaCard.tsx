@@ -1,5 +1,5 @@
-import React from 'react';
-import { TouchableOpacity, Image, Text, StyleSheet } from 'react-native';
+import React, { useMemo } from 'react';
+import { TouchableOpacity, Image, Text, StyleSheet, ViewStyle, LayoutChangeEvent } from 'react-native';
 import { ThemeColors } from '../../context/ThemeContext';
 import { MediaItem } from '../../../types/media';
 
@@ -7,18 +7,30 @@ interface MediaCardProps {
   item: MediaItem;
   onPress: (item: MediaItem) => void;
   theme: ThemeColors;
+  style?: ViewStyle;
 }
 
-export const MediaCard: React.FC<MediaCardProps> = ({ item, onPress, theme }) => {
+export const MediaCard: React.FC<MediaCardProps> = ({ item, onPress, theme, style }) => {
+  const [width, setWidth] = React.useState(120);
+  const posterHeight = useMemo(() => width * 1.5, [width]);
+
+  const onLayout = (event: LayoutChangeEvent) => {
+    const { width: cardWidth } = event.nativeEvent.layout;
+    if (cardWidth > 0 && cardWidth !== width) {
+      setWidth(cardWidth);
+    }
+  };
+
   return (
     <TouchableOpacity
-      style={styles.mediaCard}
+      style={[styles.mediaCard, style]}
       onPress={() => onPress(item)}
       activeOpacity={0.7}
+      onLayout={onLayout}
     >
       <Image
         source={{ uri: item.poster_path }}
-        style={styles.poster}
+        style={[styles.poster, { width: width, height: posterHeight }]}
         resizeMode="cover"
       />
       <Text
@@ -43,8 +55,6 @@ const styles = StyleSheet.create({
     marginRight: 12,
   },
   poster: {
-    width: 120,
-    height: 180,
     borderRadius: 8,
     backgroundColor: '#e0e0e0',
   },

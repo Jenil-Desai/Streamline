@@ -1,9 +1,9 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import HomeScreen from './HomeScreen';
 import { Bookmark, Clapperboard, Search, User } from 'lucide-react-native';
 import { useTheme } from '../../common/context/ThemeContext';
 import ProfileScreenIndex from '../profile/ProfileScreenIndex';
 import SearchScreen from '../search/SearchScreen';
+import HomeStack from './HomeStack';
 
 const Tab = createBottomTabNavigator();
 
@@ -33,7 +33,7 @@ export default function HomeScreenIndex(): React.JSX.Element {
     >
       <Tab.Screen
         name="Home"
-        component={HomeScreen}
+        component={HomeStack}
         options={{
           tabBarShowLabel: false,
           tabBarIcon: ({ focused, size }) => (
@@ -63,7 +63,7 @@ export default function HomeScreenIndex(): React.JSX.Element {
       />
       <Tab.Screen
         name="Watchlist"
-        component={HomeScreen}
+        component={HomeStack}
         options={{
           tabBarShowLabel: false,
           tabBarIcon: ({ focused, size }) => (
