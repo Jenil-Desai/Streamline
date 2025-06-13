@@ -14,11 +14,13 @@ import { Watchlist, WatchlistsResponse } from '../../types/user/watchlist';
 import WatchlistSkeletonScreen from './WatchlistSkeletonScreen';
 import { useNavigation } from '@react-navigation/native';
 import { NavigationProps } from '../../types/navigation';
+import { AddWatchlistDialog } from '../../common/components/watchlist';
 
 export default function WatchlistScreen() {
   const [watchlists, setWatchlists] = useState<Watchlist[]>([]);
   const [refreshing, setRefreshing] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [isDialogVisible, setIsDialogVisible] = useState(false);
   const { token } = useAuth();
   const { theme, isDark } = useTheme();
   const navigation = useNavigation<NavigationProps>();
@@ -62,7 +64,7 @@ export default function WatchlistScreen() {
   };
 
   const handleCreateWatchlist = () => {
-    console.log('Create new watchlist');
+    setIsDialogVisible(true);
   };
 
   const renderWatchlistItem = ({ item }: { item: Watchlist }) => (
@@ -122,6 +124,11 @@ export default function WatchlistScreen() {
         title="My Watchlists"
         rightIcon={<Plus color={theme.text} />}
         onRightPress={handleCreateWatchlist}
+      />
+      <AddWatchlistDialog
+        visible={isDialogVisible}
+        onClose={() => setIsDialogVisible(false)}
+        onCreated={() => fetchWatchlists()}
       />
       <FlatList
         data={watchlists}
