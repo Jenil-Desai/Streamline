@@ -17,16 +17,13 @@ export default function HomeScreenIndex(): React.JSX.Element {
         headerShown: false,
         tabBarStyle: {
           backgroundColor: theme.background,
-          borderTopColor: theme.border,
+          borderTopWidth: 0,
           elevation: 0,
           height: 60,
           paddingBottom: 10,
           paddingTop: 10,
-          shadowOpacity: 0,
           shadowOffset: { width: 0, height: 0 },
-          borderRadius: 15,
           marginBottom: 5,
-          marginHorizontal: 10,
           position: 'absolute',
         },
       }}

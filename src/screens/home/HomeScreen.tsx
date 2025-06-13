@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, ScrollView, RefreshControl } from 'react-native';
+import { StyleSheet, ScrollView, RefreshControl } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useEffect, useState, useCallback } from 'react';
 import { useAuth } from '../../common/context/AuthContext';
@@ -8,6 +8,7 @@ import { Search } from 'lucide-react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NavigationProps } from '../../types/navigation';
 import { MediaSection } from '../../common/components/media';
+import { HomeSkeleton, HomeError } from '../../common/components/home';
 import { HomeData, MediaItem } from '../../types/media';
 import axios from 'axios';
 import { BASE_URL } from '../../common/constants/config';
@@ -18,22 +19,31 @@ export default function HomeScreen() {
   const navigation = useNavigation<NavigationProps>();
   const [homeData, setHomeData] = useState<HomeData | null>(null);
   const [refreshing, setRefreshing] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
 
   const fetchHomeData = useCallback(async () => {
     try {
+      setError(null);
       const response = await axios.get<HomeData>(`${BASE_URL}/home`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setHomeData(response.data);
     } catch (error) {
       console.error('Error fetching home data:', error);
+      setError('Unable to load content. Please try again.');
+    } finally {
+      setLoading(false);
     }
   }, [token]);
 
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
-    await fetchHomeData();
-    setRefreshing(false);
+    try {
+      await fetchHomeData();
+    } finally {
+      setRefreshing(false);
+    }
   }, [fetchHomeData]);
 
   useEffect(() => {
@@ -64,23 +74,25 @@ export default function HomeScreen() {
         onRightPress={() => navigation.navigate('Search')}
       />
 
-      <ScrollView
-        contentContainerStyle={styles.scrollContainer}
-        refreshControl={
-          <RefreshControl
-            refreshing={refreshing}
-            onRefresh={onRefresh}
-            tintColor={theme.text}
-          />
-        }
-      >
-        {!homeData ? (
-          <View style={styles.loadingContainer}>
-            <Text style={[styles.loadingText, { color: theme.textSecondary }]}>
-              Loading content...
-            </Text>
-          </View>
-        ) : (
+      {loading || !homeData ? (
+        <HomeSkeleton sectionCount={6} />
+      ) : error ? (
+        <HomeError
+          message={error}
+          onRetry={onRefresh}
+          theme={theme}
+        />
+      ) : (
+        <ScrollView
+          contentContainerStyle={styles.scrollContainer}
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={onRefresh}
+              tintColor={theme.text}
+            />
+          }
+        >
           <>
             <MediaSection
               title="Trending Movies"
@@ -146,8 +158,8 @@ export default function HomeScreen() {
               theme={theme}
             />
           </>
-        )}
-      </ScrollView>
+        </ScrollView>
+      )}
     </SafeAreaView>
   );
 }
@@ -158,14 +170,5 @@ const styles = StyleSheet.create({
   },
   scrollContainer: {
     paddingBottom: 20,
-  },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingVertical: 40,
-  },
-  loadingText: {
-    fontSize: 16,
   },
 });

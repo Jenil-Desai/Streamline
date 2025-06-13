@@ -5,7 +5,7 @@ import { useRoute, RouteProp, useNavigation } from '@react-navigation/native';
 import { ArrowLeft } from 'lucide-react-native';
 
 import { Header } from '../../common/components/headers';
-import { MediaGrid } from '../../common/components/category';
+import { MediaGrid, CategorySkeleton, CategoryError } from '../../common/components/category';
 import { useTheme } from '../../common/context/ThemeContext';
 import { useAuth } from '../../common/context/AuthContext';
 import { RootStackParamList, NavigationProps } from '../../types/navigation';
@@ -93,18 +93,28 @@ export default function CategoryListScreen() {
         onLeftPress={() => navigation.goBack()}
       />
 
-      <MediaGrid
-        data={data}
-        loading={loading}
-        refreshing={refreshing}
-        loadingMore={loadingMore}
-        error={error}
-        theme={theme}
-        categoryTitle={categoryTitle}
-        onRefresh={handleRefresh}
-        onLoadMore={handleLoadMore}
-        onPressItem={handleMediaPress}
-      />
+      {loading ? (
+        <CategorySkeleton itemCount={12} />
+      ) : error ? (
+        <CategoryError
+          message={error}
+          onRetry={handleRefresh}
+          theme={theme}
+        />
+      ) : (
+        <MediaGrid
+          data={data}
+          loading={loading}
+          refreshing={refreshing}
+          loadingMore={loadingMore}
+          error={error}
+          theme={theme}
+          categoryTitle={categoryTitle}
+          onRefresh={handleRefresh}
+          onLoadMore={handleLoadMore}
+          onPressItem={handleMediaPress}
+        />
+      )}
     </SafeAreaView>
   );
 }
