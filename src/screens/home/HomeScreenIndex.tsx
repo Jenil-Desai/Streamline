@@ -1,6 +1,6 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import HomeScreen from './HomeScreen';
-import { Bookmark, Home, Search, User } from 'lucide-react-native';
+import { Bookmark, Clapperboard, Search, User } from 'lucide-react-native';
 import { useTheme } from '../../common/context/ThemeContext';
 import ProfileScreenIndex from '../profile/ProfileScreenIndex';
 import SearchScreen from '../search/SearchScreen';
@@ -28,7 +28,7 @@ export default function HomeScreenIndex(): React.JSX.Element {
         options={{
           tabBarShowLabel: false,
           tabBarIcon: ({ focused, size }) => (
-            <Home
+            <Clapperboard
               color={focused ? theme.primary : theme.textSecondary}
               size={size}
             />

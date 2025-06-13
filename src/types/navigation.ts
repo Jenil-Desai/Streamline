@@ -9,6 +9,9 @@ export type RootStackParamList = {
   Search: undefined;
   Profile: undefined;
   Settings: undefined;
+  EditProfile: undefined;
+  AboutApp: undefined;
+  ThemeSelection: undefined;
 };
 
 export type NavigationProps = NativeStackNavigationProp<RootStackParamList>;

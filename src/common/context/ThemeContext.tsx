@@ -1,5 +1,6 @@
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
 import { useColorScheme } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { COLORS, Colors } from '../constants/colors';
 
 // Define theme colors
@@ -65,6 +66,7 @@ type ThemeContextType = {
   themeType: ThemeType;
   isDark: boolean;
   setThemeType: (type: ThemeType) => void;
+  isLoading: boolean;
 };
 
 // Create context
@@ -83,6 +85,32 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({
   // Get system color scheme
   const systemColorScheme = useColorScheme();
   const [themeType, setThemeType] = useState<ThemeType>(initialTheme);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Load saved theme preference from storage on mount
+  useEffect(() => {
+    const loadThemePreference = async () => {
+      try {
+        const savedTheme = await AsyncStorage.getItem('@theme_preference');
+        if (savedTheme !== null) {
+          setThemeType(savedTheme as ThemeType);
+        }
+      } catch (error) {
+        console.error('Failed to load theme preference:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadThemePreference();
+  }, []);
+
+  // Save theme preference whenever it changes
+  const changeThemeType = (newTheme: ThemeType) => {
+    setThemeType(newTheme);
+    AsyncStorage.setItem('@theme_preference', newTheme)
+      .catch(error => console.error('Failed to save theme preference:', error));
+  };
 
   // Determine if we're in dark mode
   const isDark =
@@ -97,7 +125,8 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({
     theme,
     themeType,
     isDark,
-    setThemeType,
+    setThemeType: changeThemeType,
+    isLoading,
   };
 
   return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;

@@ -1,9 +1,11 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 
 import { ThemeProvider } from './common/context/ThemeContext';
 import { AuthProvider } from './common/context/AuthContext';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { useColorScheme, AppState, AppStateStatus } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import WelcomeScreen from './screens/welcome/WelcomeScreen';
 import RegisterScreen from './screens/register/RegisterScreen';
 import LoginScreen from './screens/login/LoginScreen';
@@ -12,12 +14,43 @@ import HomeScreenIndex from './screens/home/HomeScreenIndex';
 
 const Stack = createNativeStackNavigator();
 
-export default function App(): React.JSX.Element {
-  const initialTheme = 'system';
+function MainApp(): React.JSX.Element {
+  const colorScheme = useColorScheme();
+  const [themeType, setThemeType] = useState<'light' | 'dark' | 'system'>('system');
+
+  // Monitor app state changes to update theme
+  useEffect(() => {
+    const subscription = AppState.addEventListener('change', (nextAppState: AppStateStatus) => {
+      if (nextAppState === 'active') {
+        AsyncStorage.getItem('@theme_preference')
+          .then(savedTheme => {
+            if (savedTheme) {
+              setThemeType(savedTheme as 'light' | 'dark' | 'system');
+            }
+          })
+          .catch(error => console.error('Failed to load theme preference:', error));
+      }
+    });
+
+    return () => {
+      subscription.remove();
+    };
+  }, []);
+
+  // Load saved theme on initial mount
+  useEffect(() => {
+    AsyncStorage.getItem('@theme_preference')
+      .then(savedTheme => {
+        if (savedTheme) {
+          setThemeType(savedTheme as 'light' | 'dark' | 'system');
+        }
+      })
+      .catch(error => console.error('Failed to load theme preference:', error));
+  }, []);
 
   return (
     <AuthProvider>
-      <ThemeProvider initialTheme={initialTheme}>
+      <ThemeProvider initialTheme={themeType} key={`theme-${colorScheme}-${themeType}`}>
         <NavigationContainer>
           <Stack.Navigator initialRouteName="Welcome" screenOptions={{ headerShown: false }}>
             <Stack.Screen
@@ -45,4 +78,8 @@ export default function App(): React.JSX.Element {
       </ThemeProvider>
     </AuthProvider>
   );
+}
+
+export default function App(): React.JSX.Element {
+  return <MainApp />;
 }

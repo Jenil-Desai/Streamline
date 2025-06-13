@@ -6,7 +6,7 @@
 export const COLORS = {
   PRIMARY: '#4747EB',
   PRIMARY_DARK: '#3535B2', // Darker version for hover/pressed states
-  PRIMARY_LIGHT: '#7575F1', // Lighter version for highlights
+  PRIMARY_LIGHT: '#E8E8F2', // Lighter version for highlights
   PRIMARY_ULTRALIGHT: '#E8E8FC', // Very light version for backgrounds
 
   // Secondary Colors

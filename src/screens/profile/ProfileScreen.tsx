@@ -20,7 +20,7 @@ export default function ProfileScreen() {
   const [refreshing, setRefreshing] = useState(false);
   const navigation = useNavigation<NavigationProps>();
   const { token } = useAuth();
-  const { theme } = useTheme();
+  const { theme, isDark } = useTheme();
 
   const fetchData = useCallback(async () => {
     try {
@@ -63,8 +63,8 @@ export default function ProfileScreen() {
       />
       <ScrollView style={styles.contentContainer} refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />} showsVerticalScrollIndicator={false}>
         <View style={styles.avatarContainer}>
-          <View style={[styles.avatar, { backgroundColor: theme.primary }]}>
-            <Text style={styles.avatarText}>{user.first_name[0] + user.last_name[0]}</Text>
+          <View style={[styles.avatar, { backgroundColor: isDark ? theme.primaryDark : theme.primaryLight }]}>
+            <Text style={[styles.avatarText, { color: theme.text }]}>{user.first_name[0] + user.last_name[0]}</Text>
           </View>
           <View style={styles.primaryTextContainer}>
             <Text style={[styles.name, { color: theme.text }]}>{`${user.first_name} ${user.last_name}`}</Text>
@@ -125,7 +125,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   avatarText: {
-    color: 'white',
     fontSize: 40,
     fontWeight: 'bold',
     textAlign: 'center',
@@ -146,7 +145,7 @@ const styles = StyleSheet.create({
   joined: {
     textAlign: 'center',
     fontSize: 14,
-    fontFamily: font.light(),
+    fontFamily: font.regular(),
   },
   secondaryTextContainer: {
     gap: 25,
