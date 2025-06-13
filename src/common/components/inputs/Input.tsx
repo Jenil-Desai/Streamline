@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
   View,
   TextInput,
@@ -52,6 +52,14 @@ export default function Input({
   const inputRef = useRef<TextInput>(null);
   const animatedLabelValue = useRef(new Animated.Value(value ? 1 : 0)).current;
 
+  useEffect(() => {
+    if (value) {
+      animateLabelToTop();
+    } else if (!isFocused) {
+      animateLabelToCenter();
+    }
+  }, [value]);
+
   const handleFocus = () => {
     setIsFocused(true);
     animateLabelToTop();
@@ -85,12 +93,12 @@ export default function Input({
     if (variant === 'filled') {
       return animatedLabelValue.interpolate({
         inputRange: [0, 1],
-        outputRange: [12, -10], // Move higher for filled variant
+        outputRange: [16, -10], // Move higher for filled variant
       });
     }
     return animatedLabelValue.interpolate({
       inputRange: [0, 1],
-      outputRange: [12, -8],
+      outputRange: [16, -10],
     });
   };
 
@@ -131,7 +139,7 @@ export default function Input({
           ...baseStyle,
           backgroundColor: isDark ? COLORS.GRAY_800 : COLORS.GRAY_100,
           borderWidth: isFocused || error ? 1 : 0,
-          paddingTop: 16, // Add extra padding at top for the label
+          paddingTop: 22, // Increased padding at top for the label
         };
       case 'underlined':
         return {
@@ -153,7 +161,15 @@ export default function Input({
         ? isDark ? COLORS.GRAY_500 : COLORS.GRAY_600
         : theme.text,
       paddingLeft: leftIcon ? 8 : 0,
+      paddingTop: value || isFocused ? 8 : 0,
     };
+
+    if (variant === 'filled') {
+      return {
+        ...baseStyle,
+        paddingTop: 12, // Extra padding for filled variant
+      };
+    }
 
     return baseStyle;
   };
@@ -195,6 +211,9 @@ export default function Input({
                   paddingHorizontal: variant === 'outlined' ? 4 : 0,
                   left: leftIcon ? (variant === 'outlined' ? 40 : 36) : 16,
                   zIndex: 1,
+                  transform: [{
+                    translateY: value || isFocused ? 0 : 2
+                  }],
                 },
                 labelStyle,
               ]}
@@ -212,6 +231,7 @@ export default function Input({
                 onFocus={handleFocus}
                 onBlur={handleBlur}
                 editable={!disabled}
+                placeholder={isFocused || value ? rest.placeholder : ''}
                 placeholderTextColor={
                   isDark ? COLORS.GRAY_500 : COLORS.GRAY_400
                 }
@@ -250,6 +270,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 8,
     position: 'relative',
+    justifyContent: 'center',
   },
   inputContainer: {
     flexDirection: 'row',
@@ -265,6 +286,7 @@ const styles = StyleSheet.create({
   label: {
     position: 'absolute',
     fontFamily: font.medium(),
+    backgroundColor: 'transparent',
   },
   helperText: {
     marginTop: 4,

@@ -7,6 +7,7 @@ export interface Profile {
   movies_watched: number;
   shows_watched: number;
   created_at: Date;
+  country: string;
 }
 
 export interface ProfileResponse {
