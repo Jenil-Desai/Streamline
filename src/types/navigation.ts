@@ -6,6 +6,7 @@ export type RootStackParamList = {
   Onboard: undefined;
   Login: undefined;
   Home: undefined;
+  Search: undefined;
   Profile: undefined;
   Settings: undefined;
 };

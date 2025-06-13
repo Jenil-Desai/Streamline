@@ -8,7 +8,7 @@ import WelcomeScreen from './screens/welcome/WelcomeScreen';
 import RegisterScreen from './screens/register/RegisterScreen';
 import LoginScreen from './screens/login/LoginScreen';
 import OnboardScreen from './screens/onboard/OnboardScreen';
-import HomeScreen from './screens/home/HomeScreen';
+import HomeScreenIndex from './screens/home/HomeScreenIndex';
 
 const Stack = createNativeStackNavigator();
 
@@ -38,7 +38,7 @@ export default function App(): React.JSX.Element {
             />
             <Stack.Screen
               name="Home"
-              component={HomeScreen}
+              component={HomeScreenIndex}
             />
           </Stack.Navigator>
         </NavigationContainer>
