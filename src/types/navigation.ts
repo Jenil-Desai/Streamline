@@ -14,6 +14,8 @@ export type RootStackParamList = {
   ThemeSelection: undefined;
   MediaDetail: { id: number };
   CategoryList: { category: string };
+  Watchlist: undefined;
+  WatchlistItems: { id: string; name: string };
 };
 
 export type NavigationProps = NativeStackNavigationProp<RootStackParamList>;

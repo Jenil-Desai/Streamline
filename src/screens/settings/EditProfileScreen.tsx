@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Header } from '../../common/components/headers';
-import { ArrowLeft, Check, Mail, User, Flag } from 'lucide-react-native';
+import { ChevronLeft, Check, Mail, User, Flag } from 'lucide-react-native';
 import { useTheme } from '../../common/context/ThemeContext';
 import { useNavigation } from '@react-navigation/native';
 import { NavigationProps } from '../../types/navigation';
@@ -134,7 +134,7 @@ export default function EditProfileScreen() {
     <SafeAreaView style={[styles.container, { backgroundColor: theme.background }]}>
       <Header
         title="Edit Profile"
-        leftIcon={<ArrowLeft color={theme.text} />}
+        leftIcon={<ChevronLeft color={theme.text} />}
         onLeftPress={() => navigation.goBack()}
         rightIcon={<Check color={theme.text} />}
         onRightPress={handleUpdateProfile}

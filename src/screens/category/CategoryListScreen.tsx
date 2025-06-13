@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRoute, RouteProp, useNavigation } from '@react-navigation/native';
-import { ArrowLeft } from 'lucide-react-native';
+import { ChevronLeft } from 'lucide-react-native';
 
 import { Header } from '../../common/components/headers';
 import { MediaGrid, CategorySkeleton, CategoryError } from '../../common/components/category';
@@ -89,7 +89,7 @@ export default function CategoryListScreen() {
     <SafeAreaView style={[styles.container, { backgroundColor: theme.background }]}>
       <Header
         title={categoryTitle}
-        leftIcon={<ArrowLeft color={theme.text} />}
+        leftIcon={<ChevronLeft color={theme.text} />}
         onLeftPress={() => navigation.goBack()}
       />
 

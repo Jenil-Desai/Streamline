@@ -1,6 +1,6 @@
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Header } from '../../common/components/headers';
-import { ArrowLeft } from 'lucide-react-native';
+import { ChevronLeft } from 'lucide-react-native';
 import { useTheme } from '../../common/context/ThemeContext';
 import { useNavigation } from '@react-navigation/native';
 import { NavigationProps } from '../../types/navigation';
@@ -15,7 +15,7 @@ export default function AboutAppScreen() {
     <SafeAreaView style={[styles.container, { backgroundColor: theme.background }]}>
       <Header
         title="About App"
-        leftIcon={<ArrowLeft color={theme.text} />}
+        leftIcon={<ChevronLeft color={theme.text} />}
         onLeftPress={() => navigation.goBack()}
       />
       <View style={styles.contentContainer}>

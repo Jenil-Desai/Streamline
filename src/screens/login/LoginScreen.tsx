@@ -6,7 +6,7 @@ import { useAuth } from '../../common/context/AuthContext';
 import { useTheme } from '../../common/context/ThemeContext';
 import { useEffect, useState } from 'react';
 import Input from '../../common/components/inputs/Input';
-import { ArrowLeft, Key, Mail } from 'lucide-react-native';
+import { ChevronLeft, Key, Mail } from 'lucide-react-native';
 import { Header } from '../../common/components/headers';
 import Button from '../../common/components/buttons/Button';
 import { BASE_URL } from '../../common/constants/config';
@@ -96,7 +96,7 @@ export default function LoginScreen() {
     <SafeAreaView style={[styles.container, { backgroundColor: theme.background }]}>
       <Header
         title="Login"
-        leftIcon={<ArrowLeft color={theme.text} size={20} />}
+        leftIcon={<ChevronLeft color={theme.text} size={20} />}
         onLeftPress={() => navigation.replace('Welcome')}
       />
       <View style={styles.contentContainer}>

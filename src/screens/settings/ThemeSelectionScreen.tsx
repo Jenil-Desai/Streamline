@@ -1,7 +1,7 @@
 import React, { JSX } from 'react';
 import { SafeAreaView, View, Text, StyleSheet, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { Header } from '../../common/components/headers';
-import { ArrowLeft, Moon, Sun, Smartphone, Check } from 'lucide-react-native';
+import { ChevronLeft, Moon, Sun, Smartphone, Check } from 'lucide-react-native';
 import { useTheme, ThemeType } from '../../common/context/ThemeContext';
 import { useNavigation } from '@react-navigation/native';
 import { NavigationProps } from '../../types/navigation';
@@ -40,7 +40,7 @@ export default function ThemeSelectionScreen() {
     <SafeAreaView style={[styles.container, { backgroundColor: theme.background }]}>
       <Header
         title="App Theme"
-        leftIcon={<ArrowLeft color={theme.text} />}
+        leftIcon={<ChevronLeft color={theme.text} />}
         onLeftPress={() => navigation.goBack()}
       />
       {isLoading ? (

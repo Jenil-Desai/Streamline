@@ -1,7 +1,7 @@
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Header } from '../../common/components/headers';
 import { SettingsOption } from '../../common/components/SettingsOption';
-import { ArrowLeft, HelpCircle, Info, LogOut, Moon, User } from 'lucide-react-native';
+import { ChevronLeft, HelpCircle, Info, LogOut, Moon, User } from 'lucide-react-native';
 import { useTheme } from '../../common/context/ThemeContext';
 import { useNavigation } from '@react-navigation/native';
 import { NavigationProps } from '../../types/navigation';
@@ -38,7 +38,7 @@ export default function SettingsScreen() {
     <SafeAreaView style={[styles.container, { backgroundColor: theme.background }]}>
       <Header
         title="Settings"
-        leftIcon={<ArrowLeft color={theme.text} />}
+        leftIcon={<ChevronLeft color={theme.text} />}
         onLeftPress={() => navigation.goBack()}
       />
       <View style={[styles.contentContainer]}>

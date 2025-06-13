@@ -12,6 +12,8 @@ import { COLORS } from '../../common/constants/colors';
 import moment from 'moment';
 import { Watchlist, WatchlistsResponse } from '../../types/user/watchlist';
 import WatchlistSkeletonScreen from './WatchlistSkeletonScreen';
+import { useNavigation } from '@react-navigation/native';
+import { NavigationProps } from '../../types/navigation';
 
 export default function WatchlistScreen() {
   const [watchlists, setWatchlists] = useState<Watchlist[]>([]);
@@ -19,6 +21,7 @@ export default function WatchlistScreen() {
   const [loading, setLoading] = useState(true);
   const { token } = useAuth();
   const { theme, isDark } = useTheme();
+  const navigation = useNavigation<NavigationProps>();
 
   const fetchWatchlists = useCallback(async () => {
     try {
@@ -52,7 +55,10 @@ export default function WatchlistScreen() {
   }, [fetchWatchlists]);
 
   const handleWatchlistPress = (watchlist: Watchlist) => {
-    console.log('Navigate to watchlist:', watchlist.id);
+    navigation.navigate('WatchlistItems', {
+      id: watchlist.id,
+      name: watchlist.name
+    });
   };
 
   const handleCreateWatchlist = () => {
