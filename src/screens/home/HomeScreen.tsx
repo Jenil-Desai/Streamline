@@ -59,7 +59,7 @@ export default function HomeScreen() {
   }, [fetchHomeData]);
 
   const handleMediaPress = useCallback((item: MediaItem) => {
-    navigation.navigate('MediaDetail', { id: item.id });
+    navigation.navigate('TVShowDetail', { id: item.id });
   }, [navigation]);
 
   const handleSeeMore = useCallback((category: string) => {

@@ -16,6 +16,7 @@ export type RootStackParamList = {
   CategoryList: { category: string };
   Watchlist: undefined;
   WatchlistItems: { id: string; name: string };
+  TVShowDetail: { id: number };
 };
 
 export type NavigationProps = NativeStackNavigationProp<RootStackParamList>;
