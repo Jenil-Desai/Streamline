@@ -82,7 +82,7 @@ export default function CategoryListScreen() {
   }, [loadingMore, page, totalPages, loadCategoryData]);
 
   const handleMediaPress = useCallback((item: MediaItem) => {
-    navigation.navigate('MediaDetail', { id: item.id });
+    navigation.navigate('TVShowDetail', { id: item.id });
   }, [navigation]);
 
   return (

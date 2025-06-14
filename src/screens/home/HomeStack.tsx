@@ -3,9 +3,8 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import HomeScreen from './HomeScreen';
 import CategoryListScreen from '../category/CategoryListScreen';
 import { TVDetailsScreen } from '../details';
-import { RootStackParamList } from '../../types/navigation';
 
-const Stack = createNativeStackNavigator<RootStackParamList>();
+const Stack = createNativeStackNavigator();
 
 export default function HomeStack(): React.JSX.Element {
   return (
