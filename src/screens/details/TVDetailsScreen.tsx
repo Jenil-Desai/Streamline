@@ -23,6 +23,7 @@ import {
   Season,
   Episode,
   Video,
+  WatchProviders,
 } from '../../types/tv';
 import {
   formatRuntime,
@@ -39,6 +40,7 @@ import { SectionHeader } from '../../common/components/ui/SectionHeader';
 import { useWatchlist } from '../../common/context/WatchlistContext';
 import { MediaTypeEnum } from '../../types/user/watchlistItem';
 import { WatchlistModal } from '../../common/components/watchlist';
+import WatchProviderSection from '../../components/WatchProviders/WatchProviderSection';
 
 type TVDetailsScreenRouteProp = RouteProp<RootStackParamList, 'TVShowDetail'>;
 
@@ -56,13 +58,14 @@ const TVDetailsScreen: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [tvDetails, setTvDetails] = useState<TVDetails | null>(null);
   const [seasons, setSeasons] = useState<Season[]>([]);
+  const [watchProviders, setWatchProviders] = useState<WatchProviders>({});
   const [selectedSeason, setSelectedSeason] = useState<number>(1);
   const [currentSeasonEpisodes, setCurrentSeasonEpisodes] = useState<Episode[]>([]);
   const [selectedVideoType, setSelectedVideoType] = useState<string>('Trailer');
   const [availableVideoTypes, setAvailableVideoTypes] = useState<string[]>([]);
   const [selectedProviderType, setSelectedProviderType] = useState<string>('flatrate');
   const [availableProviderTypes, setAvailableProviderTypes] = useState<string[]>([]);
-  const [selectedCountry, setSelectedCountry] = useState<string>('US');
+  const [selectedCountry, setSelectedCountry] = useState<string>('IN');
   const [countryOptions, setCountryOptions] = useState<string[]>([]);
   const [modalVisible, setModalVisible] = useState(false);
 
@@ -78,6 +81,7 @@ const TVDetailsScreen: React.FC = () => {
         if (response.success && response.data) {
           setTvDetails(response.data.details);
           setSeasons(response.data.seasons || []);
+          setWatchProviders(response.data.watchProviders);
 
           // Set default season
           if (response.data.seasons && response.data.seasons.length > 0) {
@@ -165,9 +169,9 @@ const TVDetailsScreen: React.FC = () => {
 
   // Setup watch provider data
   useEffect(() => {
-    if (tvDetails?.watchProviders) {
+    if (watchProviders) {
       // Get all available countries
-      const countries = Object.keys(tvDetails.watchProviders);
+      const countries = Object.keys(watchProviders);
       setCountryOptions(countries);
 
       // Set default country to IN (India) if available, otherwise use US or first available
@@ -180,8 +184,8 @@ const TVDetailsScreen: React.FC = () => {
       }
 
       // Get provider types for the selected country
-      if (selectedCountry && tvDetails.watchProviders[selectedCountry]) {
-        const providerTypes = Object.keys(tvDetails.watchProviders[selectedCountry])
+      if (selectedCountry && watchProviders[selectedCountry]) {
+        const providerTypes = Object.keys(watchProviders[selectedCountry])
           .filter(key => key !== 'link');
         setAvailableProviderTypes(providerTypes);
 
@@ -193,7 +197,7 @@ const TVDetailsScreen: React.FC = () => {
         }
       }
     }
-  }, [tvDetails?.watchProviders, selectedCountry]);
+  }, [watchProviders, selectedCountry]);
 
   // Get similar and recommendation shows
   const similar = tvDetails?.similar?.results?.map(item => ({
@@ -268,7 +272,6 @@ const TVDetailsScreen: React.FC = () => {
       />
 
       <ScrollView
-        style={styles.scrollView}
         contentContainerStyle={styles.scrollViewContent}
         showsVerticalScrollIndicator={false}
       >
@@ -350,8 +353,18 @@ const TVDetailsScreen: React.FC = () => {
 
         {/* Overview */}
         <View style={styles.overviewContainer}>
-          <SectionHeader title="Overview" theme={theme} />
-          <Text style={[styles.overview, { color: theme.textSecondary }]}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+            <SectionHeader title="Overview" theme={theme} />
+            <TouchableOpacity>
+              <Badge
+                key={'overview'}
+                label={'Watch Now'}
+                backgroundColor={theme.primary}
+                textColor={'#ffffff'}
+              />
+            </TouchableOpacity>
+          </View>
+          <Text style={[styles.overview, { color: theme.textSecondary, paddingHorizontal: 16 }]}>
             {tvDetails.overview || 'No overview available.'}
           </Text>
         </View>
@@ -395,7 +408,7 @@ const TVDetailsScreen: React.FC = () => {
                         }
                       ]}
                     >
-                      {season.name} ({tvDetails.seasons[selectedSeason].episode_count})
+                      {season.name} ({season.episodes?.length})
                     </Text>
                   </TouchableOpacity>
                 ))}
@@ -449,10 +462,10 @@ const TVDetailsScreen: React.FC = () => {
         )}
 
         {/* Watch Providers Section */}
-        {tvDetails.watchProviders && Object.keys(tvDetails.watchProviders).length > 0 && (
+        {watchProviders && Object.keys(watchProviders).length > 0 && (
           <>
             <WatchProviderSection
-              watchProviders={tvDetails.watchProviders}
+              watchProviders={watchProviders}
               selectedCountry={selectedCountry}
               selectedProviderType={selectedProviderType}
               availableProviderTypes={availableProviderTypes}
@@ -692,7 +705,6 @@ const styles = StyleSheet.create({
 
   // Overview section
   overviewContainer: {
-    paddingHorizontal: 16,
     marginBottom: 24,
   },
   overview: {
