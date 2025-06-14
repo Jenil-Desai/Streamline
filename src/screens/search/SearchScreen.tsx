@@ -7,6 +7,8 @@ import {
   TouchableOpacity,
   StyleSheet,
   Dimensions,
+  StatusBar,
+  Platform,
 } from 'react-native';
 import { Header } from '../../common/components/headers';
 import { ListFilter, Search as SearchIcon, X } from 'lucide-react-native';
@@ -30,7 +32,7 @@ const getNumColumns = () => {
 };
 
 export default function SearchScreen() {
-  const { theme } = useTheme();
+  const { theme, isDark } = useTheme();
   const navigation = useNavigation<NavigationProps>();
   const [searchQuery, setSearchQuery] = useState('');
   const [results, setResults] = useState<MediaItem[]>([]);
@@ -193,6 +195,11 @@ export default function SearchScreen() {
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: theme.background }]}>
+      <StatusBar
+        backgroundColor={theme.background}
+        barStyle={isDark ? 'light-content' : 'dark-content'}
+        translucent={false}
+      />
       <Header
         title="Search"
         rightIcon={<ListFilter color={theme.text} />}
@@ -254,6 +261,7 @@ export default function SearchScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
   },
   searchContainer: {
     paddingHorizontal: 16,

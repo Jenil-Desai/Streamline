@@ -1,5 +1,5 @@
 import React, { useRef, useEffect } from 'react';
-import { SafeAreaView, View, StyleSheet, Animated, Dimensions } from 'react-native';
+import { SafeAreaView, View, StyleSheet, Animated, Dimensions, Platform, StatusBar } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { ChevronLeft } from 'lucide-react-native';
 import { NavigationProps } from '../../../types/navigation';
@@ -73,6 +73,12 @@ const MovieDetailsSkeletonScreen: React.FC = () => {
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: theme.background }]}>
+      <StatusBar
+        backgroundColor={theme.background}
+        barStyle={isDark ? 'light-content' : 'dark-content'}
+        translucent={false}
+      />
+
       <Header
         title="Movie Details"
         leftIcon={<ChevronLeft size={24} color={theme.text} />}
@@ -361,6 +367,7 @@ const MovieDetailsSkeletonScreen: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
   },
   scrollContent: {
     paddingBottom: 20,

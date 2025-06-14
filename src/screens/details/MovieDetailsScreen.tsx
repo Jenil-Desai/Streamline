@@ -10,6 +10,8 @@ import {
   Linking,
   Alert,
   Dimensions,
+  StatusBar,
+  Platform,
 } from 'react-native';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { ChevronLeft, Star, Users, Clock, Calendar, Globe, Bookmark } from 'lucide-react-native';
@@ -67,7 +69,7 @@ type MovieDetailsScreenRouteProp = RouteProp<RootStackParamList, 'MovieDetail'>;
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
 const MovieDetailsScreen: React.FC = () => {
-  const { theme } = useTheme();
+  const { theme, isDark } = useTheme();
   const navigation = useNavigation<NavigationProps>();
   const route = useRoute<MovieDetailsScreenRouteProp>();
   const { id } = route.params;
@@ -262,6 +264,11 @@ const MovieDetailsScreen: React.FC = () => {
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: theme.background }]}>
+      <StatusBar
+        backgroundColor={theme.background}
+        barStyle={isDark ? 'light-content' : 'dark-content'}
+        translucent={false}
+      />
       <Header
         title={movieDetails.title}
         leftIcon={<ChevronLeft size={24} color={theme.text} />}
@@ -521,9 +528,9 @@ const MovieDetailsScreen: React.FC = () => {
 };
 
 const styles = StyleSheet.create({
-  // Layout
   container: {
     flex: 1,
+    paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
   },
   scrollView: {
     flex: 1,

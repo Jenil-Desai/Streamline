@@ -1,5 +1,5 @@
 import React, { JSX } from 'react';
-import { SafeAreaView, View, Text, StyleSheet, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { SafeAreaView, View, Text, StyleSheet, TouchableOpacity, ActivityIndicator, StatusBar, Platform } from 'react-native';
 import { Header } from '../../common/components/headers';
 import { ChevronLeft, Moon, Sun, Smartphone, Check } from 'lucide-react-native';
 import { useTheme, ThemeType } from '../../common/context/ThemeContext';
@@ -38,6 +38,11 @@ export default function ThemeSelectionScreen() {
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: theme.background }]}>
+      <StatusBar
+        backgroundColor={theme.background}
+        barStyle={isDark ? 'light-content' : 'dark-content'}
+        translucent={false}
+      />
       <Header
         title="App Theme"
         leftIcon={<ChevronLeft color={theme.text} />}
@@ -52,9 +57,6 @@ export default function ThemeSelectionScreen() {
         </View>
       ) : (
         <View style={styles.contentContainer}>
-          <Text style={[styles.sectionDescription, { color: theme.textSecondary }]}>
-            Choose how Streamline appears to you
-          </Text>
           {themeOptions.map((option) => (
             <TouchableOpacity
               key={option.type}
@@ -94,6 +96,7 @@ export default function ThemeSelectionScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
   },
   contentContainer: {
     flex: 1,

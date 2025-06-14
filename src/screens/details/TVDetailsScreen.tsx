@@ -10,6 +10,8 @@ import {
   Linking,
   Alert,
   Dimensions,
+  StatusBar,
+  Platform,
 } from 'react-native';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { ChevronLeft, Star, Users, Clock, Calendar, Globe, Bookmark } from 'lucide-react-native';
@@ -611,9 +613,9 @@ const TVDetailsScreen: React.FC = () => {
 };
 
 const styles = StyleSheet.create({
-  // Layout
   container: {
     flex: 1,
+    paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
   },
   scrollView: {
     flex: 1,
