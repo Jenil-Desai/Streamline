@@ -23,7 +23,6 @@ export default function LoginScreen() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  // Error states for input validation
   const [emailError, setEmailError] = useState('');
   const [passwordError, setPasswordError] = useState('');
 

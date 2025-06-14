@@ -24,8 +24,8 @@ export default function SettingsScreen() {
         },
         {
           text: 'Logout',
-          onPress: () => {
-            logout();
+          onPress: async () => {
+            await logout();
             navigation.replace('Login');
           },
           style: 'destructive',
