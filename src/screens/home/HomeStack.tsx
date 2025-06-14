@@ -3,6 +3,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import HomeScreen from './HomeScreen';
 import CategoryListScreen from '../category/CategoryListScreen';
 import { TVDetailsScreen } from '../details';
+import MovieDetailsScreen from '../details/MovieDetailsScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -17,6 +18,7 @@ export default function HomeStack(): React.JSX.Element {
       <Stack.Screen name="Home" component={HomeScreen} />
       <Stack.Screen name="CategoryList" component={CategoryListScreen} />
       <Stack.Screen name="TVShowDetail" component={TVDetailsScreen} />
+      <Stack.Screen name="MovieDetail" component={MovieDetailsScreen} />
     </Stack.Navigator>
   );
 }

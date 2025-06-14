@@ -59,7 +59,11 @@ export default function HomeScreen() {
   }, [fetchHomeData]);
 
   const handleMediaPress = useCallback((item: MediaItem) => {
-    navigation.navigate('TVShowDetail', { id: item.id });
+    if (item.media_type === 'movie') {
+      navigation.navigate('MovieDetail', { id: item.id });
+    } else if (item.media_type === 'tv') {
+      navigation.navigate('TVShowDetail', { id: item.id });
+    }
   }, [navigation]);
 
   const handleSeeMore = useCallback((category: string) => {
