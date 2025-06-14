@@ -8,7 +8,7 @@ import {
   Dimensions
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { ChevronLeft, Film, Tv, Calendar, Clock, CheckCircle, Circle, Play, XCircle } from 'lucide-react-native';
+import { ChevronLeft, Film, Tv, Calendar, Clock, CheckCircle, Circle, Play } from 'lucide-react-native';
 import axios from 'axios';
 import moment from 'moment';
 import { useRoute, useNavigation, RouteProp } from '@react-navigation/native';
@@ -99,8 +99,6 @@ export default function WatchlistItemsScreen() {
         return <CheckCircle size={14} color={theme.success} />;
       case WatchlistItemStatus.IN_PROGRESS:
         return <Play size={14} color={theme.info} />;
-      case WatchlistItemStatus.DROPPED:
-        return <XCircle size={14} color={theme.error} />;
       case WatchlistItemStatus.PLANNED:
       default:
         return <Circle size={14} color={theme.warning} />;
@@ -113,8 +111,6 @@ export default function WatchlistItemsScreen() {
         return 'Watched';
       case WatchlistItemStatus.IN_PROGRESS:
         return 'In Progress';
-      case WatchlistItemStatus.DROPPED:
-        return 'Dropped';
       case WatchlistItemStatus.PLANNED:
       default:
         return 'Planned';
@@ -127,8 +123,6 @@ export default function WatchlistItemsScreen() {
         return theme.success;
       case WatchlistItemStatus.IN_PROGRESS:
         return theme.info;
-      case WatchlistItemStatus.DROPPED:
-        return theme.error;
       case WatchlistItemStatus.PLANNED:
       default:
         return theme.warning;

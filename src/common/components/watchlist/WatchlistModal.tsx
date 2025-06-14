@@ -30,13 +30,13 @@ const WatchlistModal: React.FC<WatchlistModalProps> = ({
   item,
   theme,
 }) => {
-  const { watchlists, selectedWatchlistId, selectWatchlist, addItemToWatchlist, isLoading, refreshWatchlists } = useWatchlist();
+  const { watchlists, selectedWatchlistId, selectWatchlist, addItemToWatchlist, isLoading } = useWatchlist();
 
   const [status, setStatus] = useState<WatchlistItemStatus>(WatchlistItemStatus.PLANNED);
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [scheduledDate, setScheduledDate] = useState<Date | null>(null);
 
-  // Reset state when the modal is opened with a new item
+  // Reset state when modal opens
   useEffect(() => {
     if (visible && item) {
       setStatus(WatchlistItemStatus.PLANNED);
@@ -44,23 +44,23 @@ const WatchlistModal: React.FC<WatchlistModalProps> = ({
     }
   }, [visible, item]);
 
-  if (!item) { return null; }
+  if (!item) return null;
 
   const handleAddToWatchlist = async () => {
-    if (!item) { return; }
+    if (!item) return;
 
+    const mediaType = item.media_type === 'movie' ? MediaTypeEnum.MOVIE : MediaTypeEnum.TV;
     const scheduledDateString = scheduledDate ? scheduledDate.toISOString() : null;
 
     const success = await addItemToWatchlist(
       item,
-      item.media_type === 'movie' ? MediaTypeEnum.MOVIE : MediaTypeEnum.TV,
+      mediaType,
       selectedWatchlistId || undefined,
       status,
       scheduledDateString
     );
 
     if (success) {
-      refreshWatchlists();
       onClose();
     }
   };
@@ -123,7 +123,11 @@ const WatchlistModal: React.FC<WatchlistModalProps> = ({
 
           {/* Status Selection */}
           <Text style={[styles.sectionTitle, { color: theme.text }]}>Status</Text>
-          <View style={styles.statusContainer}>
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.watchlistsContainer}
+          >
             {Object.values(WatchlistItemStatus).map((statusOption) => (
               <TouchableOpacity
                 key={statusOption}
@@ -149,7 +153,7 @@ const WatchlistModal: React.FC<WatchlistModalProps> = ({
                 </Text>
               </TouchableOpacity>
             ))}
-          </View>
+          </ScrollView>
 
           {/* Schedule Date Selection */}
           <Text style={[styles.sectionTitle, { color: theme.text }]}>Schedule (Optional)</Text>

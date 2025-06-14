@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { TouchableOpacity, Image, Text, StyleSheet, ViewStyle, LayoutChangeEvent, View } from 'react-native';
 import { Bookmark } from 'lucide-react-native';
 import { ThemeColors } from '../../context/ThemeContext';
@@ -18,8 +18,12 @@ export const MediaCard: React.FC<MediaCardProps> = ({ item, onPress, theme, styl
   const [width, setWidth] = useState(120);
   const posterHeight = useMemo(() => width * 1.5, [width]);
   const [modalVisible, setModalVisible] = useState(false);
-  const { isItemInWatchlistLocal, removeItemFromWatchlist, refreshWatchlists } = useWatchlist();
-  const isInWatchlist = isItemInWatchlistLocal(item.id, MediaTypeEnum.MOVIE);
+
+  const { isItemInWatchlist, removeItemFromWatchlist } = useWatchlist();
+
+  // Convert media type to enum
+  const mediaType = item.media_type === 'movie' ? MediaTypeEnum.MOVIE : MediaTypeEnum.TV;
+  const isInWatchlist = isItemInWatchlist(item.id, mediaType);
 
   const onLayout = (event: LayoutChangeEvent) => {
     const { width: cardWidth } = event.nativeEvent.layout;
@@ -30,10 +34,7 @@ export const MediaCard: React.FC<MediaCardProps> = ({ item, onPress, theme, styl
 
   const handleBookmarkPress = async () => {
     if (isInWatchlist) {
-      const success = await removeItemFromWatchlist(item, MediaTypeEnum.MOVIE);
-      if (success) {
-        await refreshWatchlists();
-      }
+      await removeItemFromWatchlist(item, mediaType);
     } else {
       setModalVisible(true);
     }
@@ -53,11 +54,18 @@ export const MediaCard: React.FC<MediaCardProps> = ({ item, onPress, theme, styl
             resizeMode="cover"
           />
           <TouchableOpacity
-            style={[styles.bookmarkButton, { backgroundColor: isInWatchlist ? theme.primary : 'rgba(0, 0, 0, 0.5)' }]}
+            style={[
+              styles.bookmarkButton,
+              { backgroundColor: isInWatchlist ? theme.primary : 'rgba(0, 0, 0, 0.5)' },
+            ]}
             onPress={handleBookmarkPress}
             activeOpacity={0.7}
           >
-            <Bookmark size={16} color="#FFFFFF" fill={isInWatchlist ? "#FFFFFF" : "none"} />
+            <Bookmark
+              size={16}
+              color='#FFFFFF'
+              fill={isInWatchlist ? '#FFFFFF' : 'none'}
+            />
           </TouchableOpacity>
         </View>
         <Text
@@ -76,10 +84,7 @@ export const MediaCard: React.FC<MediaCardProps> = ({ item, onPress, theme, styl
 
       <WatchlistModal
         visible={modalVisible}
-        onClose={() => {
-          setModalVisible(false);
-          // No need to check status; context will update isInWatchlist
-        }}
+        onClose={() => setModalVisible(false)}
         item={item}
         theme={theme}
       />

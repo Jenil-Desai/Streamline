@@ -4,7 +4,6 @@ export enum WatchlistItemStatus {
   PLANNED = 'PLANNED',
   WATCHED = 'WATCHED',
   IN_PROGRESS = 'IN_PROGRESS',
-  DROPPED = 'DROPPED'
 }
 
 export enum MediaTypeEnum {

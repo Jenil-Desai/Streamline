@@ -9,8 +9,7 @@ interface WatchlistContextType {
   selectedWatchlistId: string | null;
   isLoading: boolean;
   error: string | null;
-  isItemInWatchlist: (tmdbId: number, mediaType: MediaTypeEnum) => Promise<boolean>;
-  isItemInWatchlistLocal: (tmdbId: number, mediaType: MediaTypeEnum) => boolean;
+  isItemInWatchlist: (tmdbId: number, mediaType: MediaTypeEnum) => boolean;
   addItemToWatchlist: (
     item: MediaItem,
     mediaType: MediaTypeEnum,
@@ -37,7 +36,6 @@ export const WatchlistContextProvider: React.FC<WatchlistContextProviderProps> =
   const [selectedWatchlistId, setSelectedWatchlistId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const [watchlistItemsSet, setWatchlistItemsSet] = useState<Set<string>>(new Set());
 
   const { token } = useAuth();
 
@@ -68,19 +66,6 @@ export const WatchlistContextProvider: React.FC<WatchlistContextProviderProps> =
     refreshWatchlists();
   }, [refreshWatchlists]);
 
-  // Build a Set of all watchlist items for fast lookup
-  useEffect(() => {
-    const items = new Set<string>();
-    watchlists.forEach(wl => {
-      if (wl.items && Array.isArray(wl.items)) {
-        wl.items.forEach((item: any) => {
-          items.add(`${item.tmdbId}-${item.mediaType}`);
-        });
-      }
-    });
-    setWatchlistItemsSet(items);
-  }, [watchlists]);
-
   // Set the first watchlist as selected when watchlists load
   useEffect(() => {
     if (watchlists.length > 0 && !selectedWatchlistId) {
@@ -92,22 +77,13 @@ export const WatchlistContextProvider: React.FC<WatchlistContextProviderProps> =
     setSelectedWatchlistId(watchlistId);
   };
 
-  // Local, synchronous lookup for watchlist status
-  const isItemInWatchlistLocal = (tmdbId: number, mediaType: MediaTypeEnum) => {
-    return watchlistItemsSet.has(`${tmdbId}-${mediaType}`);
-  };
-
-  const isItemInWatchlist = async (tmdbId: number, mediaType: MediaTypeEnum): Promise<boolean> => {
-    if (!token || !selectedWatchlistId) {
-      return false;
-    }
-
-    try {
-      const result = await checkIfInWatchlist(selectedWatchlistId, tmdbId, mediaType, token);
-      return result.inWatchlist;
-    } catch (err) {
-      return false;
-    }
+  // Check if item is in any watchlist
+  const isItemInWatchlist = (tmdbId: number, mediaType: MediaTypeEnum): boolean => {
+    return watchlists.some(watchlist =>
+      watchlist.WatchlistItem && watchlist.WatchlistItem.some((item: any) =>
+        item.tmdbId === tmdbId && item.mediaType === mediaType
+      )
+    );
   };
 
   const addItemToWatchlist = async (
@@ -133,7 +109,18 @@ export const WatchlistContextProvider: React.FC<WatchlistContextProviderProps> =
         scheduledAt
       );
 
-      return response.success && !!response.item;
+      if (response.success && response.item) {
+        // Update local state immediately
+        setWatchlists(prevWatchlists =>
+          prevWatchlists.map(wl =>
+            wl.id === targetWatchlistId
+              ? { ...wl, WatchlistItem: [...(wl.WatchlistItem || []), response.item] }
+              : wl
+          )
+        );
+        return true;
+      }
+      return false;
     } catch (err) {
       return false;
     }
@@ -160,17 +147,23 @@ export const WatchlistContextProvider: React.FC<WatchlistContextProviderProps> =
         token
       );
 
-      return response.success;
+      if (response.success) {
+        // Update local state immediately
+        setWatchlists(prevWatchlists =>
+          prevWatchlists.map(wl =>
+            wl.id === targetWatchlistId
+              ? { ...wl, WatchlistItem: (wl.WatchlistItem || []).filter((i: any) => i.id !== result.itemId) }
+              : wl
+          )
+        );
+        return true;
+      }
+      return false;
     } catch (err) {
       return false;
     }
   };
 
-  /**
-   * Creates a new watchlist
-   * @param name - Name of the watchlist to create
-   * @returns Object containing success status and watchlist data or error message
-   */
   const createNewWatchlist = async (name: string) => {
     if (!token) {
       return { success: false, error: 'You must be logged in to create a watchlist' };
@@ -180,27 +173,20 @@ export const WatchlistContextProvider: React.FC<WatchlistContextProviderProps> =
       const response = await createWatchlist(name, token);
 
       if (response.success && response.watchlist) {
-        // Refresh the watchlists to include the newly created one
-        await refreshWatchlists();
+        // Add to local state
+        setWatchlists(prev => [...prev, response.watchlist]);
 
-        // Optionally select the newly created watchlist
+        // Select the newly created watchlist
         if (response.watchlist.id) {
           selectWatchlist(response.watchlist.id);
         }
       }
       return response;
     } catch (err) {
-      console.error('Error creating watchlist:', err);
       return { success: false, error: 'Failed to create watchlist' };
     }
   };
 
-  /**
-   * Updates an existing watchlist
-   * @param id - ID of the watchlist to update
-   * @param name - New name for the watchlist
-   * @returns Object containing success status and watchlist data or error message
-   */
   const updateWatchlist = async (id: string, name: string) => {
     if (!token) {
       return { success: false, error: 'You must be logged in to update a watchlist' };
@@ -209,22 +195,18 @@ export const WatchlistContextProvider: React.FC<WatchlistContextProviderProps> =
     try {
       const response = await updateWatchlistService(id, name, token);
 
-      if (response.success) {
-        // Refresh the watchlists to reflect changes
-        await refreshWatchlists();
+      if (response.success && response.watchlist) {
+        // Update local state
+        setWatchlists(prev =>
+          prev.map(wl => wl.id === id ? { ...wl, name } : wl)
+        );
       }
       return response;
     } catch (err) {
-      console.error('Error updating watchlist:', err);
       return { success: false, error: 'Failed to update watchlist' };
     }
   };
 
-  /**
-   * Deletes a watchlist and all its items
-   * @param id - ID of the watchlist to delete
-   * @returns Object containing success status and message or error
-   */
   const deleteWatchlist = async (id: string) => {
     if (!token) {
       return { success: false, error: 'You must be logged in to delete a watchlist' };
@@ -234,16 +216,16 @@ export const WatchlistContextProvider: React.FC<WatchlistContextProviderProps> =
       const response = await deleteWatchlistService(id, token);
 
       if (response.success) {
-        // If the deleted watchlist was selected, clear the selection
+        // Remove from local state
+        setWatchlists(prev => prev.filter(wl => wl.id !== id));
+
+        // Clear selection if deleted watchlist was selected
         if (selectedWatchlistId === id) {
           setSelectedWatchlistId(null);
         }
-        // Refresh the watchlists to reflect changes
-        await refreshWatchlists();
       }
       return response;
     } catch (err) {
-      console.error('Error deleting watchlist:', err);
       return { success: false, error: 'Failed to delete watchlist' };
     }
   };
@@ -254,7 +236,6 @@ export const WatchlistContextProvider: React.FC<WatchlistContextProviderProps> =
     isLoading,
     error,
     isItemInWatchlist,
-    isItemInWatchlistLocal,
     addItemToWatchlist,
     removeItemFromWatchlist,
     selectWatchlist,
@@ -271,7 +252,6 @@ export const WatchlistContextProvider: React.FC<WatchlistContextProviderProps> =
   );
 };
 
-// Custom hook for using the Watchlist context
 export const useWatchlist = (): WatchlistContextType => {
   const context = useContext(WatchlistContext);
   if (context === undefined) {
