@@ -4,16 +4,16 @@ import { AlertCircle, RefreshCw } from 'lucide-react-native';
 import { ThemeColors } from '../../../context/ThemeContext';
 import { COLORS } from '../../../constants/colors';
 
-interface HomeErrorProps {
+interface ProfileErrorProps {
   message: string;
   onRetry: () => void;
   theme: ThemeColors;
 }
 
 /**
- * Error component displayed when home screen data fails to load
+ * Error component displayed when profile data fails to load
  */
-const HomeError: React.FC<HomeErrorProps> = ({ message, onRetry, theme }) => {
+const ProfileError: React.FC<ProfileErrorProps> = ({ message, onRetry, theme }) => {
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
       <View style={styles.contentContainer}>
@@ -24,11 +24,11 @@ const HomeError: React.FC<HomeErrorProps> = ({ message, onRetry, theme }) => {
         />
 
         <Text style={[styles.errorTitle, { color: theme.text }]}>
-          Oops! Something went wrong
+          Unable to Load Profile
         </Text>
 
         <Text style={[styles.errorMessage, { color: theme.textSecondary }]}>
-          {message || "Please check your connection and try again."}
+          {message || "We couldn't fetch your profile information. Please check your connection and try again."}
         </Text>
 
         <TouchableOpacity
@@ -37,7 +37,7 @@ const HomeError: React.FC<HomeErrorProps> = ({ message, onRetry, theme }) => {
           activeOpacity={0.7}
         >
           <RefreshCw color={COLORS.WHITE} size={18} />
-          <Text style={styles.retryText}>Refresh</Text>
+          <Text style={styles.retryText}>Refresh Profile</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -56,11 +56,22 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingVertical: 24,
   },
-  illustration: {
-    width: 200,
-    height: 180,
+  iconContainer: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    justifyContent: 'center',
+    alignItems: 'center',
     marginBottom: 24,
-    opacity: 0.9,
+    position: 'relative',
+  },
+  errorIconOverlay: {
+    position: 'absolute',
+    bottom: -2,
+    right: -2,
+    backgroundColor: COLORS.WHITE,
+    borderRadius: 12,
+    padding: 2,
   },
   errorTitle: {
     fontSize: 20,
@@ -75,12 +86,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginBottom: 8,
   },
-  errorDescription: {
-    fontSize: 14,
-    textAlign: 'center',
-    marginBottom: 24,
-    lineHeight: 20,
-  },
   retryButton: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -88,7 +93,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 32,
     paddingVertical: 12,
     borderRadius: 8,
-    marginTop: 8,
+    marginTop: 16,
   },
   retryText: {
     color: COLORS.WHITE,
@@ -98,4 +103,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default HomeError;
+export default ProfileError;

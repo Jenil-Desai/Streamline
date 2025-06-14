@@ -1,7 +1,7 @@
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Header } from '../../common/components/headers';
-import { StyleSheet, View, Text, RefreshControl, TouchableOpacity, FlatList, Dimensions } from 'react-native';
-import { Plus, Clock, List, BookMarked } from 'lucide-react-native';
+import { StyleSheet, View, Text, RefreshControl, TouchableOpacity, FlatList } from 'react-native';
+import { Plus, Clock, BookMarked } from 'lucide-react-native';
 import { useTheme } from '../../common/context/ThemeContext';
 import { font } from '../../common/utils/font-family';
 import axios from 'axios';
@@ -14,12 +14,13 @@ import { Watchlist, WatchlistsResponse } from '../../types/user/watchlist';
 import WatchlistSkeletonScreen from './WatchlistSkeletonScreen';
 import { useNavigation } from '@react-navigation/native';
 import { NavigationProps } from '../../types/navigation';
-import { AddWatchlistDialog, WatchlistActions } from '../../common/components/watchlist';
+import { AddWatchlistDialog, WatchlistActions, WatchlistEmpty, WatchlistError } from '../../common/components/watchlist';
 
 export default function WatchlistScreen() {
   const [watchlists, setWatchlists] = useState<Watchlist[]>([]);
   const [refreshing, setRefreshing] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [isDialogVisible, setIsDialogVisible] = useState(false);
   const { token } = useAuth();
   const { theme, isDark } = useTheme();
@@ -27,6 +28,7 @@ export default function WatchlistScreen() {
 
   const fetchWatchlists = useCallback(async () => {
     try {
+      setError(null);
       const response = await axios.get<WatchlistsResponse>(`${BASE_URL}/watchlists`, {
         headers: { Authorization: `Bearer ${token}` }
       });
@@ -34,8 +36,9 @@ export default function WatchlistScreen() {
       if (data.success) {
         setWatchlists(data.watchlists);
       }
-    } catch (error) {
-      console.error('Error fetching watchlists:', error);
+    } catch (err) {
+      console.error('Error fetching watchlists:', err);
+      setError('Failed to load watchlists');
     } finally {
       setLoading(false);
     }
@@ -98,29 +101,32 @@ export default function WatchlistScreen() {
   );
 
   const renderEmptyList = () => (
-    <View style={styles.emptyContainer}>
-      <View style={[styles.emptyIconContainer, { backgroundColor: isDark ? theme.primaryDark : theme.primaryLight }]}>
-        <List size={40} color={theme.primary} />
-      </View>
-      <Text style={[styles.emptyTitle, { color: theme.text }]}>
-        No Watchlists Found
-      </Text>
-      <Text style={[styles.emptyText, { color: theme.textSecondary }]}>
-        Create your first watchlist to start tracking content you want to watch.
-      </Text>
-      <TouchableOpacity
-        style={[styles.createButton, { backgroundColor: theme.primary }]}
-        onPress={handleCreateWatchlist}
-        activeOpacity={0.8}
-      >
-        <Plus size={18} color={COLORS.WHITE} style={styles.createButtonIcon} />
-        <Text style={[styles.createButtonText, { color: COLORS.WHITE }]}>Create New Watchlist</Text>
-      </TouchableOpacity>
-    </View>
+    <WatchlistEmpty
+      onCreateWatchlist={handleCreateWatchlist}
+      theme={theme}
+      isDark={isDark}
+    />
   );
 
   if (loading && !refreshing) {
     return <WatchlistSkeletonScreen />;
+  }
+
+  if (error && watchlists.length === 0 && !loading) {
+    return (
+      <SafeAreaView style={[styles.container, { backgroundColor: theme.background }]}>
+        <Header
+          title="My Watchlists"
+          rightIcon={<Plus color={theme.text} />}
+          onRightPress={handleCreateWatchlist}
+        />
+        <WatchlistError
+          message={error}
+          onRetry={fetchWatchlists}
+          theme={theme}
+        />
+      </SafeAreaView>
+    );
   }
 
   return (
@@ -158,7 +164,7 @@ export default function WatchlistScreen() {
   );
 }
 
-const { width } = Dimensions.get('window');
+
 
 const styles = StyleSheet.create({
   container: {
@@ -211,48 +217,5 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontFamily: font.regular(),
   },
-  emptyContainer: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 20,
-    maxWidth: width * 0.9,
-    alignSelf: 'center',
-  },
-  emptyIconContainer: {
-    width: 80,
-    height: 80,
-    borderRadius: 8,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 24,
-  },
-  emptyTitle: {
-    fontSize: 20,
-    fontFamily: font.bold(),
-    textAlign: 'center',
-    marginBottom: 12,
-  },
-  emptyText: {
-    fontSize: 16,
-    fontFamily: font.regular(),
-    textAlign: 'center',
-    marginBottom: 28,
-    lineHeight: 22,
-  },
-  createButton: {
-    paddingVertical: 14,
-    paddingHorizontal: 24,
-    borderRadius: 8,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    minWidth: 200,
-  },
-  createButtonIcon: {
-    marginRight: 8,
-  },
-  createButtonText: {
-    fontSize: 16,
-    fontFamily: font.semiBold(),
-  }
+
 });

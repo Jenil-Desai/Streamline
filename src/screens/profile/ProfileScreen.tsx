@@ -14,23 +14,27 @@ import moment from 'moment';
 import { COLORS } from '../../common/constants/colors';
 import { NavigationProps } from '../../types/navigation';
 import ProfileSkeletonScreen from './ProfileSkeletonScreen';
+import { ProfileError } from '../../common/components/profile/errors';
 
 export default function ProfileScreen() {
   const [user, setUser] = useState<Profile | null>(null);
   const [refreshing, setRefreshing] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const navigation = useNavigation<NavigationProps>();
   const { token } = useAuth();
   const { theme, isDark } = useTheme();
 
   const fetchData = useCallback(async () => {
     try {
+      setError(null);
       const response = await axios.get<ProfileResponse>(`${BASE_URL}/user/profile`, { headers: { Authorization: `Bearer ${token}` } });
       const data = response.data;
       if (data.success && data.profile) {
         setUser(data.profile);
       }
-    } catch (error) {
-      console.error('Error fetching profile:', error);
+    } catch (err) {
+      console.error('Error fetching profile:', err);
+      setError('Failed to load profile information');
     }
   }, [token]);
 
@@ -47,6 +51,23 @@ export default function ProfileScreen() {
 
     return () => clearInterval(dataInterval);
   }, [fetchData]);
+
+  if (error && !user) {
+    return (
+      <SafeAreaView style={[styles.container, { backgroundColor: theme.background }]}>
+        <Header
+          title="Profile"
+          rightIcon={<Settings color={theme.text} />}
+          onRightPress={() => navigation.navigate('Settings')}
+        />
+        <ProfileError
+          message={error}
+          onRetry={fetchData}
+          theme={theme}
+        />
+      </SafeAreaView>
+    );
+  }
 
   if (!user) {
     return (

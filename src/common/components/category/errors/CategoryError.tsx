@@ -23,12 +23,11 @@ const CategoryError: React.FC<CategoryErrorProps> = ({ message, onRetry, theme }
       />
 
       <Text style={[styles.errorMessage, { color: theme.text }]}>
-        {message}
+        Please check your connection
       </Text>
 
       <Text style={[styles.errorDescription, { color: theme.textSecondary }]}>
-        There was a problem loading the content.
-        Please check your connection and try again.
+        {message}
       </Text>
 
       {onRetry && (

@@ -23,6 +23,7 @@ import { MediaItem } from '../../types/media';
 import { WatchlistItem, WatchlistItemStatus, MediaTypeEnum, WatchlistItemsResponse } from '../../types/user/watchlistItem';
 import { COLORS } from '../../common/constants/colors';
 import WatchlistItemsSkeletonScreen from './WatchlistItemsSkeletonScreen';
+import { WatchlistItemsEmpty, WatchlistItemsError } from '../../common/components/watchlist';
 
 // Define the route params type
 type WatchlistItemsParamList = {
@@ -42,6 +43,7 @@ export default function WatchlistItemsScreen() {
   const [items, setItems] = useState<WatchlistItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   // Calculate grid dimensions
   const { width } = Dimensions.get('window');
@@ -51,6 +53,7 @@ export default function WatchlistItemsScreen() {
 
   const fetchWatchlistItems = useCallback(async () => {
     try {
+      setError(null);
       const response = await axios.get<WatchlistItemsResponse>(
         `${BASE_URL}/watchlists/${watchlistId}/items`,
         {
@@ -62,8 +65,9 @@ export default function WatchlistItemsScreen() {
       if (data.success) {
         setItems(data.items);
       }
-    } catch (error) {
-      console.error('Error fetching watchlist items:', error);
+    } catch (err) {
+      console.error('Error fetching watchlist items:', err);
+      setError('Failed to load watchlist items');
     } finally {
       setLoading(false);
     }
@@ -181,21 +185,31 @@ export default function WatchlistItemsScreen() {
   };
 
   const renderEmptyList = () => (
-    <View style={styles.emptyContainer}>
-      <View style={[styles.emptyIconContainer, { backgroundColor: isDark ? theme.primaryDark : theme.primaryLight }]}>
-        <Film size={40} color={theme.primary} />
-      </View>
-      <Text style={[styles.emptyTitle, { color: theme.text }]}>
-        No Items Found
-      </Text>
-      <Text style={[styles.emptyText, { color: theme.textSecondary }]}>
-        This watchlist is empty. Add movies or TV shows to start tracking.
-      </Text>
-    </View>
+    <WatchlistItemsEmpty
+      theme={theme}
+      isDark={isDark}
+    />
   );
 
   if (loading && !refreshing) {
     return <WatchlistItemsSkeletonScreen />;
+  }
+
+  if (error && items.length === 0 && !loading) {
+    return (
+      <SafeAreaView style={[styles.container, { backgroundColor: theme.background }]}>
+        <Header
+          title={watchlistName || 'Watchlist Items'}
+          leftIcon={<ChevronLeft color={theme.text} />}
+          onLeftPress={handleBackPress}
+        />
+        <WatchlistItemsError
+          message={error}
+          onRetry={fetchWatchlistItems}
+          theme={theme}
+        />
+      </SafeAreaView>
+    );
   }
 
   return (
@@ -271,32 +285,5 @@ const styles = StyleSheet.create({
     fontFamily: font.medium(),
     lineHeight: 15,
   },
-  emptyContainer: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 20,
-    maxWidth: Dimensions.get('window').width * 0.9,
-    alignSelf: 'center',
-  },
-  emptyIconContainer: {
-    width: 80,
-    height: 80,
-    borderRadius: 8,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 24,
-  },
-  emptyTitle: {
-    fontSize: 20,
-    fontFamily: font.bold(),
-    textAlign: 'center',
-    marginBottom: 12,
-  },
-  emptyText: {
-    fontSize: 16,
-    fontFamily: font.regular(),
-    textAlign: 'center',
-    marginBottom: 28,
-    lineHeight: 22,
-  }
+
 });
