@@ -5,13 +5,13 @@ import CountryPicker, { Country, CountryCode } from 'react-native-country-picker
 
 import { useAuth } from '../../common/context/AuthContext';
 import { NavigationProps } from '../../types/navigation';
-import Input from '../../common/components/inputs/Input';
 import Button from '../../common/components/buttons/Button';
-import Header from '../../common/components/headers/Header';
 import { useTheme } from '../../common/context/ThemeContext';
 import { BASE_URL } from '../../common/constants/config';
 import axios from 'axios';
 import { OnboardResponse } from '../../types/auth/onboard';
+import { Header } from '../../common/components/header';
+import { Input } from '../../common/components/input';
 
 interface OnboardData {
   bio: string;

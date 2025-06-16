@@ -6,13 +6,13 @@ import { useAuth } from '../../common/context/AuthContext';
 import { useTheme } from '../../common/context/ThemeContext';
 import { useEffect, useState } from 'react';
 import { Alert } from 'react-native';
-import Input from '../../common/components/inputs/Input';
 import { ChevronLeft, Key, Mail, User } from 'lucide-react-native';
-import { Header } from '../../common/components/headers';
 import Button from '../../common/components/buttons/Button';
 import { BASE_URL } from '../../common/constants/config';
 import axios from 'axios';
 import { RegisterResponse } from '../../types/auth/register';
+import { Input } from '../../common/components/input';
+import { Header } from '../../common/components/header';
 
 export default function RegisterScreen() {
   const [confirmPassword, setConfirmPassword] = useState('');

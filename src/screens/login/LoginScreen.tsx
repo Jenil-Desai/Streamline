@@ -5,12 +5,12 @@ import { useNavigation } from '@react-navigation/native';
 import { useAuth } from '../../common/context/AuthContext';
 import { useTheme } from '../../common/context/ThemeContext';
 import { useEffect, useState } from 'react';
-import Input from '../../common/components/inputs/Input';
 import { ChevronLeft, Key, Mail } from 'lucide-react-native';
-import { Header } from '../../common/components/headers';
 import Button from '../../common/components/buttons/Button';
 import { BASE_URL } from '../../common/constants/config';
 import axios from 'axios';
+import { Input } from '../../common/components/input';
+import { Header } from '../../common/components/header';
 
 interface LoginResponse {
   success: boolean;

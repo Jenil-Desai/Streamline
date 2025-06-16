@@ -19,7 +19,6 @@ function MainApp(): React.JSX.Element {
   const colorScheme = useColorScheme();
   const [themeType, setThemeType] = useState<'light' | 'dark' | 'system'>('system');
 
-  // Monitor app state changes to update theme
   useEffect(() => {
     const subscription = AppState.addEventListener('change', (nextAppState: AppStateStatus) => {
       if (nextAppState === 'active') {
@@ -38,7 +37,6 @@ function MainApp(): React.JSX.Element {
     };
   }, []);
 
-  // Load saved theme on initial mount
   useEffect(() => {
     AsyncStorage.getItem('@theme_preference')
       .then(savedTheme => {

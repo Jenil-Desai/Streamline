@@ -1,74 +1,33 @@
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Header } from '../../common/components/headers';
+import { Header } from '../../common/components/header';
 import { StyleSheet, View, Text, RefreshControl, TouchableOpacity, FlatList } from 'react-native';
 import { Plus, Clock, BookMarked } from 'lucide-react-native';
 import { useTheme } from '../../common/context/ThemeContext';
 import { font } from '../../common/utils/font-family';
-import axios from 'axios';
-import { BASE_URL } from '../../common/constants/config';
-import { useAuth } from '../../common/context/AuthContext';
-import { useCallback, useEffect, useState } from 'react';
 import { COLORS } from '../../common/constants/colors';
 import moment from 'moment';
-import { Watchlist, WatchlistsResponse } from '../../types/user/watchlist';
-import WatchlistSkeletonScreen from './WatchlistSkeletonScreen';
-import { useNavigation } from '@react-navigation/native';
-import { NavigationProps } from '../../types/navigation';
-import { AddWatchlistDialog, WatchlistActions, WatchlistEmpty, WatchlistError } from '../../common/components/watchlist';
+import { Watchlist } from '../../types/user/watchlist';
+import { AddWatchlistDialog, WatchlistActions } from '../../common/components/watchlist';
+import { useWatchlists } from '../../common/hooks/useWatchlists';
+import { WatchlistSkeletonScreen } from './components';
+import { ErrorScreen } from '../../common/components/errorScreen';
+import { EmptyScreen } from '../../common/components/emptyScreen';
 
 export default function WatchlistScreen() {
-  const [watchlists, setWatchlists] = useState<Watchlist[]>([]);
-  const [refreshing, setRefreshing] = useState(false);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [isDialogVisible, setIsDialogVisible] = useState(false);
-  const { token } = useAuth();
   const { theme, isDark } = useTheme();
-  const navigation = useNavigation<NavigationProps>();
 
-  const fetchWatchlists = useCallback(async () => {
-    try {
-      setError(null);
-      const response = await axios.get<WatchlistsResponse>(`${BASE_URL}/watchlists`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      const data = response.data;
-      if (data.success) {
-        setWatchlists(data.watchlists);
-      }
-    } catch (err) {
-      console.error('Error fetching watchlists:', err);
-      setError('Failed to load watchlists');
-    } finally {
-      setLoading(false);
-    }
-  }, [token]);
-
-  const onRefresh = useCallback(async () => {
-    setRefreshing(true);
-    await fetchWatchlists();
-    setRefreshing(false);
-  }, [fetchWatchlists]);
-
-  useEffect(() => {
-    setLoading(true);
-    fetchWatchlists();
-
-    const dataInterval = setInterval(() => fetchWatchlists(), 900000);
-
-    return () => clearInterval(dataInterval);
-  }, [fetchWatchlists]);
-
-  const handleWatchlistPress = (watchlist: Watchlist) => {
-    navigation.navigate('WatchlistItems', {
-      id: watchlist.id,
-      name: watchlist.name
-    });
-  };
-
-  const handleCreateWatchlist = () => {
-    setIsDialogVisible(true);
-  };
+  const {
+    watchlists,
+    refreshing,
+    loading,
+    error,
+    isDialogVisible,
+    setIsDialogVisible,
+    fetchWatchlists,
+    onRefresh,
+    handleWatchlistPress,
+    handleCreateWatchlist
+  } = useWatchlists();
 
   const renderWatchlistItem = ({ item }: { item: Watchlist }) => (
     <TouchableOpacity
@@ -101,10 +60,11 @@ export default function WatchlistScreen() {
   );
 
   const renderEmptyList = () => (
-    <WatchlistEmpty
-      onCreateWatchlist={handleCreateWatchlist}
+    <EmptyScreen
+      icon={<BookMarked size={40} color={theme.primary} />}
+      title="No Watchlists"
+      subtitle="Create your first watchlist to keep track of your favorite items."
       theme={theme}
-      isDark={isDark}
     />
   );
 
@@ -120,9 +80,10 @@ export default function WatchlistScreen() {
           rightIcon={<Plus color={theme.text} />}
           onRightPress={handleCreateWatchlist}
         />
-        <WatchlistError
+        <ErrorScreen
           message={error}
-          onRetry={fetchWatchlists}
+          actionText="Refresh"
+          onAction={onRefresh}
           theme={theme}
         />
       </SafeAreaView>

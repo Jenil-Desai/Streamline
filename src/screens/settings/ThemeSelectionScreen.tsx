@@ -1,11 +1,11 @@
 import React, { JSX } from 'react';
 import { SafeAreaView, View, Text, StyleSheet, TouchableOpacity, ActivityIndicator, StatusBar, Platform } from 'react-native';
-import { Header } from '../../common/components/headers';
 import { ChevronLeft, Moon, Sun, Smartphone, Check } from 'lucide-react-native';
 import { useTheme, ThemeType } from '../../common/context/ThemeContext';
 import { useNavigation } from '@react-navigation/native';
 import { NavigationProps } from '../../types/navigation';
 import { font } from '../../common/utils/font-family';
+import { Header } from '../../common/components/header';
 
 export default function ThemeSelectionScreen() {
   const { theme, themeType, setThemeType, isDark, isLoading } = useTheme();

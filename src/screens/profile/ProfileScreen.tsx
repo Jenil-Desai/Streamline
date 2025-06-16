@@ -1,5 +1,4 @@
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Header } from '../../common/components/headers';
 import { StyleSheet, View, Text, ScrollView, RefreshControl } from 'react-native';
 import { Settings } from 'lucide-react-native';
 import { useTheme } from '../../common/context/ThemeContext';
@@ -13,8 +12,9 @@ import { Profile, ProfileResponse } from '../../types/user/profile';
 import moment from 'moment';
 import { COLORS } from '../../common/constants/colors';
 import { NavigationProps } from '../../types/navigation';
-import ProfileSkeletonScreen from './ProfileSkeletonScreen';
-import { ProfileError } from '../../common/components/profile/errors';
+import { Header } from '../../common/components/header';
+import { ErrorScreen } from '../../common/components/errorScreen';
+import { ProfileSkeletonScreen } from './components';
 
 export default function ProfileScreen() {
   const [user, setUser] = useState<Profile | null>(null);
@@ -60,9 +60,10 @@ export default function ProfileScreen() {
           rightIcon={<Settings color={theme.text} />}
           onRightPress={() => navigation.navigate('Settings')}
         />
-        <ProfileError
+        <ErrorScreen
           message={error}
-          onRetry={fetchData}
+          actionText="Refresh"
+          onAction={onRefresh}
           theme={theme}
         />
       </SafeAreaView>

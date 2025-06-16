@@ -3,15 +3,16 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useEffect, useState, useCallback } from 'react';
 import { useAuth } from '../../common/context/AuthContext';
 import { useTheme } from '../../common/context/ThemeContext';
-import { Header } from '../../common/components/headers';
 import { Search } from 'lucide-react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NavigationProps } from '../../types/navigation';
 import { MediaSection } from '../../common/components/media';
-import { HomeSkeleton, HomeError } from '../../common/components/home';
 import { HomeData, MediaItem } from '../../types/media';
 import axios from 'axios';
 import { BASE_URL } from '../../common/constants/config';
+import { Header } from '../../common/components/header';
+import { HomeSkeleton } from './components';
+import { ErrorScreen } from '../../common/components/errorScreen';
 
 export default function HomeScreen() {
   const { token } = useAuth();
@@ -81,9 +82,10 @@ export default function HomeScreen() {
       {loading || !homeData ? (
         <HomeSkeleton sectionCount={6} />
       ) : error ? (
-        <HomeError
+        <ErrorScreen
           message={error}
-          onRetry={onRefresh}
+          actionText='Refresh'
+          onAction={onRefresh}
           theme={theme}
         />
       ) : (

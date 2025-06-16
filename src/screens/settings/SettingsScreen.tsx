@@ -1,12 +1,12 @@
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Header } from '../../common/components/headers';
-import { SettingsOption } from '../../common/components/SettingsOption';
 import { ChevronLeft, HelpCircle, Info, LogOut, Moon, User } from 'lucide-react-native';
 import { useTheme } from '../../common/context/ThemeContext';
 import { useNavigation } from '@react-navigation/native';
 import { NavigationProps } from '../../types/navigation';
 import { View, Linking, StyleSheet, Alert } from 'react-native';
 import { useAuth } from '../../common/context/AuthContext';
+import { Header } from '../../common/components/header';
+import { SettingsOption } from './components';
 
 export default function SettingsScreen() {
   const navigation = useNavigation<NavigationProps>();

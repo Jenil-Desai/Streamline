@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import { MediaItem } from '../../../types/media';
 import { ThemeColors } from '../../context/ThemeContext';
 import { MediaCard } from './MediaCard';
-import { SectionHeader } from '../ui/SectionHeader';
+import { SectionHeader } from '../sectionHeader';
 
 interface MediaListProps {
   title: string;

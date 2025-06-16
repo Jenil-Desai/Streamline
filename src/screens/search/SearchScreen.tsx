@@ -10,18 +10,19 @@ import {
   StatusBar,
   Platform,
 } from 'react-native';
-import { Header } from '../../common/components/headers';
-import { ListFilter, Search as SearchIcon, X } from 'lucide-react-native';
+import { ListFilter, Search as SearchIcon, SearchX, X } from 'lucide-react-native';
 import { useTheme } from '../../common/context/ThemeContext';
 import { MediaItem } from '../../types/media';
 import { searchMedia, SearchParams } from '../../services/api/searchService';
 import SearchFilterModal, { FilterOptions } from './components/SearchFilterModal';
 import { useNavigation } from '@react-navigation/native';
-import useDebounce from '../../hooks/useDebounce';
 import { NavigationProps } from '../../types/navigation';
 import { MediaCard } from '../../common/components/media/MediaCard';
-import { SearchEmptyState, SearchError } from './components/states';
-import { SearchSkeleton } from './components/skeletons';
+import { SearchSkeleton } from './components';
+import useDebounce from '../../common/hooks/useDebounce';
+import { Header } from '../../common/components/header';
+import { ErrorScreen } from '../../common/components/errorScreen';
+import { EmptyScreen } from '../../common/components/emptyScreen';
 
 // Get screen dimensions for responsive layouts
 const { width } = Dimensions.get('window');
@@ -187,7 +188,14 @@ export default function SearchScreen() {
     }
 
     if (error && results.length === 0) {
-      return <SearchError message={error} theme={theme} onRetry={handleRetry} />;
+      return (
+        <ErrorScreen
+          message={error}
+          actionText="Retry"
+          onAction={handleRetry}
+          theme={theme}
+        />
+      );
     }
 
     return null;
@@ -240,7 +248,12 @@ export default function SearchScreen() {
           onEndReachedThreshold={0.5}
           ListFooterComponent={ListFooterComponent}
           ListEmptyComponent={
-            <SearchEmptyState hasQuery={Boolean(debouncedQuery)} theme={theme} />
+            <EmptyScreen
+              icon={<SearchX size={40} color={theme.primary} />}
+              title="No Search Results"
+              subtitle="Try a different query or adjust your filters."
+              theme={theme}
+            />
           }
           columnWrapperStyle={styles.columnWrapper}
           showsVerticalScrollIndicator={false}

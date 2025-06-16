@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Modal, View, Text, StyleSheet, ActivityIndicator, TouchableOpacity, Alert, Keyboard } from 'react-native';
 import { X } from 'lucide-react-native';
-import Input from '../inputs/Input';
 import Button from '../buttons/Button';
 import { useTheme } from '../../context/ThemeContext';
 import { useWatchlist } from '../../context/WatchlistContext';
 import { font } from '../../utils/font-family';
+import { Input } from '../input';
 
 interface AddWatchlistDialogProps {
   visible: boolean;

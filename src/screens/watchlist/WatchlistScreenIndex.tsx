@@ -1,16 +1,17 @@
 import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
+import WatchlistItemsScreen from '../watchlist-items/WatchlistItemsScreen';
 import WatchlistScreen from './WatchlistScreen';
-import WatchlistItemsScreen from './WatchlistItemsScreen';
-import TVDetailsScreen from '../details';
-import MovieDetailsScreen from '../details/MovieDetailsScreen';
+import MovieDetailsScreen from '../movie-details/MovieDetailsScreen';
+import TVDetailsScreen from '../tv-details/TVDetailsScreen';
 
 const WatchlistStack = createNativeStackNavigator();
 
 export default function WatchlistScreenIndex() {
   return (
     <WatchlistStack.Navigator
+      initialRouteName="Watchlist"
       screenOptions={{
         headerShown: false,
       }}

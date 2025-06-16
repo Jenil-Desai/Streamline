@@ -1,12 +1,10 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Header } from '../../common/components/headers';
 import { ChevronLeft, Check, Mail, User, Flag } from 'lucide-react-native';
 import { useTheme } from '../../common/context/ThemeContext';
 import { useNavigation } from '@react-navigation/native';
 import { NavigationProps } from '../../types/navigation';
 import { StyleSheet, View, Text, ScrollView, Alert, TextInput, KeyboardAvoidingView, Platform, TouchableOpacity } from 'react-native';
-import Input from '../../common/components/inputs/Input';
 import Button from '../../common/components/buttons/Button';
 import axios from 'axios';
 import { BASE_URL } from '../../common/constants/config';
@@ -14,6 +12,8 @@ import { useAuth } from '../../common/context/AuthContext';
 import { Profile, ProfileResponse } from '../../types/user/profile';
 import { font } from '../../common/utils/font-family';
 import CountryPicker, { Country, CountryCode } from 'react-native-country-picker-modal';
+import { Header } from '../../common/components/header';
+import { Input } from '../../common/components/input';
 
 export default function EditProfileScreen() {
   const { theme, isDark } = useTheme();
