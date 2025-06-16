@@ -12,6 +12,7 @@ import RegisterScreen from './screens/register/RegisterScreen';
 import LoginScreen from './screens/login/LoginScreen';
 import OnboardScreen from './screens/onboard/OnboardScreen';
 import HomeScreenIndex from './screens/home/HomeScreenIndex';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 const Stack = createNativeStackNavigator();
 
@@ -48,36 +49,38 @@ function MainApp(): React.JSX.Element {
   }, []);
 
   return (
-    <AuthProvider>
-      <ThemeProvider initialTheme={themeType} key={`theme-${colorScheme}-${themeType}`}>
-        <WatchlistContextProvider>
-          <NavigationContainer>
-            <Stack.Navigator initialRouteName="Welcome" screenOptions={{ headerShown: false }}>
-              <Stack.Screen
-                name="Welcome"
-                component={WelcomeScreen}
-              />
-              <Stack.Screen
-                name="Register"
-                component={RegisterScreen}
-              />
-              <Stack.Screen
-                name="Onboard"
-                component={OnboardScreen}
-              />
-              <Stack.Screen
-                name="Login"
-                component={LoginScreen}
-              />
-              <Stack.Screen
-                name="Home"
-                component={HomeScreenIndex}
-              />
-            </Stack.Navigator>
-          </NavigationContainer>
-        </WatchlistContextProvider>
-      </ThemeProvider>
-    </AuthProvider>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <AuthProvider>
+        <ThemeProvider initialTheme={themeType} key={`theme-${colorScheme}-${themeType}`}>
+          <WatchlistContextProvider>
+            <NavigationContainer>
+              <Stack.Navigator initialRouteName="Welcome" screenOptions={{ headerShown: false }}>
+                <Stack.Screen
+                  name="Welcome"
+                  component={WelcomeScreen}
+                />
+                <Stack.Screen
+                  name="Register"
+                  component={RegisterScreen}
+                />
+                <Stack.Screen
+                  name="Onboard"
+                  component={OnboardScreen}
+                />
+                <Stack.Screen
+                  name="Login"
+                  component={LoginScreen}
+                />
+                <Stack.Screen
+                  name="Home"
+                  component={HomeScreenIndex}
+                />
+              </Stack.Navigator>
+            </NavigationContainer>
+          </WatchlistContextProvider>
+        </ThemeProvider>
+      </AuthProvider>
+    </GestureHandlerRootView>
   );
 }
 

@@ -24,7 +24,7 @@ export default function AboutAppScreen() {
           <View>
             <View style={styles.infoCard}>
               <Text>Version</Text>
-              <Text>1.5.2</Text>
+              <Text>2.0.1</Text>
             </View>
             <View style={styles.infoCard}>
               <Text>Build</Text>
