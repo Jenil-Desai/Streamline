@@ -8,7 +8,6 @@ import {
   ScrollView,
   Pressable,
   Platform,
-  ActivityIndicator,
 } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { X, Calendar, Check } from 'lucide-react-native';
@@ -16,6 +15,7 @@ import { ThemeColors } from '../../context/ThemeContext';
 import { useWatchlist } from '../../context/WatchlistContext';
 import { MediaItem } from '../../../types/media';
 import { WatchlistItemStatus, MediaTypeEnum } from '../../../types/user/watchlistItem';
+import { ErrorScreen } from '../errorScreen';
 
 interface WatchlistModalProps {
   visible: boolean;
@@ -30,7 +30,7 @@ const WatchlistModal: React.FC<WatchlistModalProps> = ({
   item,
   theme,
 }) => {
-  const { watchlists, selectedWatchlistId, selectWatchlist, addItemToWatchlist, isLoading } = useWatchlist();
+  const { watchlists, selectedWatchlistId, selectWatchlist, addItemToWatchlist, isLoading, error } = useWatchlist();
 
   const [status, setStatus] = useState<WatchlistItemStatus>(WatchlistItemStatus.PLANNED);
   const [showDatePicker, setShowDatePicker] = useState(false);
@@ -47,7 +47,7 @@ const WatchlistModal: React.FC<WatchlistModalProps> = ({
   if (!item) { return null; }
 
   const handleAddToWatchlist = async () => {
-    if (!item) { return; }
+    // if (!item) { return; }
 
     const mediaType = item.media_type === 'movie' ? MediaTypeEnum.MOVIE : MediaTypeEnum.TV;
     const scheduledDateString = scheduledDate ? scheduledDate.toISOString() : null;
@@ -72,6 +72,24 @@ const WatchlistModal: React.FC<WatchlistModalProps> = ({
       setScheduledDate(currentDate);
     }
   };
+
+  if (error) {
+    return (
+      <Modal
+        visible={visible}
+        transparent={true}
+        animationType="slide"
+        onRequestClose={onClose}
+      >
+        <ErrorScreen
+          message={error}
+          actionText="Close"
+          onAction={onClose}
+          theme={theme}
+        />
+      </Modal>
+    )
+  }
 
   return (
     <Modal
@@ -179,12 +197,12 @@ const WatchlistModal: React.FC<WatchlistModalProps> = ({
 
           {/* Add Button */}
           <TouchableOpacity
-            style={[styles.addButton, { backgroundColor: theme.primary }]}
+            style={[styles.addButton, { backgroundColor: isLoading ? theme.secondary : theme.primary }]}
             onPress={handleAddToWatchlist}
             disabled={isLoading}
           >
             {isLoading ? (
-              <ActivityIndicator color="white" size="small" />
+              <Text style={styles.addButtonText}>Adding to Watchlist</Text>
             ) : (
               <Text style={styles.addButtonText}>Add to Watchlist</Text>
             )}

@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect, useRef } from 'react';
+import React, { useState } from 'react';
 import {
   SafeAreaView,
   View,
@@ -12,51 +12,41 @@ import {
 } from 'react-native';
 import { ListFilter, Search as SearchIcon, SearchX, X } from 'lucide-react-native';
 import { useTheme } from '../../common/context/ThemeContext';
-import { MediaItem } from '../../types/media';
-import { searchMedia, SearchParams } from '../../services/api/searchService';
-import SearchFilterModal, { FilterOptions } from './components/SearchFilterModal';
-import { useNavigation } from '@react-navigation/native';
-import { NavigationProps } from '../../types/navigation';
-import { MediaCard } from '../../common/components/media/MediaCard';
+import SearchFilterModal from './components/SearchFilterModal';
 import { SearchSkeleton } from './components';
-import useDebounce from '../../common/hooks/useDebounce';
 import { Header } from '../../common/components/header';
-import { ErrorScreen } from '../../common/components/errorScreen';
 import { EmptyScreen } from '../../common/components/emptyScreen';
+import { useSearch, FilterOptions } from '../../common/hooks/useSearch';
+import SearchResultRender from './components/SearchResultRender';
+import SearchFooter from './components/SearchFooter';
 
-// Get screen dimensions for responsive layouts
 const { width } = Dimensions.get('window');
 
-// Calculate number of columns based on screen width
 const getNumColumns = () => {
   return width >= 600 ? 3 : 2;
 };
 
 export default function SearchScreen() {
   const { theme, isDark } = useTheme();
-  const navigation = useNavigation<NavigationProps>();
-  const [searchQuery, setSearchQuery] = useState('');
-  const [results, setResults] = useState<MediaItem[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [page, setPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(0);
   const [filterModalVisible, setFilterModalVisible] = useState(false);
   const [layoutColumns, setLayoutColumns] = useState(getNumColumns());
-  const [filters, setFilters] = useState<FilterOptions>({
-    mediaType: '',
-    includeAdult: false,
-    language: 'en-US'
-  });
 
-  // Use custom debounce hook
-  const debouncedQuery = useDebounce(searchQuery, 500);
+  const {
+    searchQuery,
+    setSearchQuery,
+    results,
+    loading,
+    error,
+    page,
+    filters,
+    setFilters,
+    handleLoadMore,
+    handleClearSearch,
+    handleRetry,
+    flatListRef
+  } = useSearch();
 
-  // Refs
-  const flatListRef = useRef<FlatList>(null);
-
-  // Handle dimension changes for responsive layout
-  useEffect(() => {
+  React.useEffect(() => {
     const subscription = Dimensions.addEventListener('change', () => {
       setLayoutColumns(getNumColumns());
     });
@@ -66,139 +56,8 @@ export default function SearchScreen() {
     };
   }, []);
 
-  // Reset page when search query changes
-  useEffect(() => {
-    setPage(1);
-    if (flatListRef.current) {
-      flatListRef.current.scrollToOffset({ offset: 0, animated: false });
-    }
-  }, [debouncedQuery, filters]);
-
-  // Fetch results whenever debounced query or filters change
-  useEffect(() => {
-    const fetchResults = async () => {
-      if (!debouncedQuery.trim()) {
-        setResults([]);
-        return;
-      }
-
-      setLoading(true);
-      setError(null);
-
-      try {
-        const searchParams: SearchParams = {
-          query: debouncedQuery,
-          page: page,
-          include_adult: filters.includeAdult,
-          language: filters.language,
-          media_type: filters.mediaType,
-        };
-
-        const response = await searchMedia(searchParams);
-
-        if (response.success && response.data) {
-          if (page === 1) {
-            setResults(response.data.results);
-          } else {
-            setResults(prev => [...prev, ...response!.data!.results]);
-          }
-          setTotalPages(response.data.total_pages);
-        } else {
-          setError(response.error || 'Failed to fetch results');
-          setResults([]);
-        }
-      } catch (err) {
-        setError('An error occurred while fetching results');
-        console.error('Search error:', err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchResults();
-  }, [debouncedQuery, page, filters]);
-
-  // Handle load more results
-  const handleLoadMore = useCallback(() => {
-    if (!loading && page < totalPages) {
-      setPage(prevPage => prevPage + 1);
-    }
-  }, [loading, page, totalPages]);
-
-  // Clear search query
-  const handleClearSearch = () => {
-    setSearchQuery('');
-    setResults([]);
-  };
-
-  // Handle item press
-  const handleItemPress = (item: MediaItem) => {
-    if (item.media_type === 'movie') {
-      navigation.navigate('MovieDetail', {
-        id: item.id,
-      });
-    } else {
-      navigation.navigate('TVShowDetail', {
-        id: item.id,
-      });
-    }
-  };
-
-  // Apply filters
   const handleApplyFilters = (newFilters: FilterOptions) => {
     setFilters(newFilters);
-    setPage(1);
-    if (flatListRef.current) {
-      flatListRef.current.scrollToOffset({ offset: 0, animated: false });
-    }
-  };
-
-  // Handle retry on error
-  const handleRetry = () => {
-    setPage(1);
-    // Re-trigger the useEffect by forcing a state update
-    setFilters({ ...filters });
-  };
-
-  // Render item for FlatList
-  const renderItem = ({ item }: { item: MediaItem }) => {
-    const itemWidth = (width - (layoutColumns + 1) * 16) / layoutColumns;
-    return (
-      <MediaCard
-        item={item}
-        onPress={handleItemPress}
-        theme={theme}
-        style={{
-          width: itemWidth,
-          marginBottom: 20,
-          marginHorizontal: 8
-        }}
-      />
-    );
-  };
-
-  // Footer component with loading spinner or error message
-  const ListFooterComponent = () => {
-    if (loading && page > 1) {
-      return (
-        <View style={styles.footerLoaderContainer}>
-          <SearchSkeleton itemCount={layoutColumns * 2} />
-        </View>
-      );
-    }
-
-    if (error && results.length === 0) {
-      return (
-        <ErrorScreen
-          message={error}
-          actionText="Retry"
-          onAction={handleRetry}
-          theme={theme}
-        />
-      );
-    }
-
-    return null;
   };
 
   return (
@@ -240,13 +99,13 @@ export default function SearchScreen() {
         <FlatList
           ref={flatListRef}
           data={results}
-          renderItem={renderItem}
+          renderItem={({ item }) => <SearchResultRender item={item} width={width} layoutColumns={layoutColumns} />}
           keyExtractor={(item) => `${item.id}-${item.media_type}`}
           numColumns={layoutColumns}
           contentContainerStyle={styles.resultsContainer}
           onEndReached={handleLoadMore}
           onEndReachedThreshold={0.5}
-          ListFooterComponent={ListFooterComponent}
+          ListFooterComponent={<SearchFooter loading={loading} error={error} results={results} page={page} layoutColumns={layoutColumns} handleRetry={handleRetry} />}
           ListEmptyComponent={
             <EmptyScreen
               icon={<SearchX size={40} color={theme.primary} />}
@@ -305,9 +164,5 @@ const styles = StyleSheet.create({
   },
   columnWrapper: {
     justifyContent: 'space-between',
-  },
-  footerLoaderContainer: {
-    paddingTop: 8,
-    paddingBottom: 16,
   },
 });

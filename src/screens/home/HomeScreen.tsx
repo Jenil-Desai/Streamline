@@ -1,63 +1,23 @@
 import { StyleSheet, ScrollView, RefreshControl } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useEffect, useState, useCallback } from 'react';
+import { useCallback } from 'react';
 import { useAuth } from '../../common/context/AuthContext';
 import { useTheme } from '../../common/context/ThemeContext';
 import { Search } from 'lucide-react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NavigationProps } from '../../types/navigation';
 import { MediaSection } from '../../common/components/media';
-import { HomeData, MediaItem } from '../../types/media';
-import axios from 'axios';
-import { BASE_URL } from '../../common/constants/config';
+import { MediaItem } from '../../types/media';
 import { Header } from '../../common/components/header';
 import { HomeSkeleton } from './components';
 import { ErrorScreen } from '../../common/components/errorScreen';
+import { useHomeData } from '../../common/hooks/useHomeData';
 
 export default function HomeScreen() {
   const { token } = useAuth();
   const { theme } = useTheme();
   const navigation = useNavigation<NavigationProps>();
-  const [homeData, setHomeData] = useState<HomeData | null>(null);
-  const [refreshing, setRefreshing] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true);
-
-  const fetchHomeData = useCallback(async () => {
-    try {
-      setError(null);
-      const response = await axios.get<HomeData>(`${BASE_URL}/home`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      setHomeData(response.data);
-    } catch (error) {
-      console.error('Error fetching home data:', error);
-      setError('Unable to load content. Please try again.');
-    } finally {
-      setLoading(false);
-    }
-  }, [token]);
-
-  const onRefresh = useCallback(async () => {
-    setRefreshing(true);
-    try {
-      await fetchHomeData();
-    } finally {
-      setRefreshing(false);
-    }
-  }, [fetchHomeData]);
-
-  useEffect(() => {
-    fetchHomeData();
-  }, [fetchHomeData]);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      fetchHomeData();
-    }, 300000);
-
-    return () => clearInterval(interval);
-  }, [fetchHomeData]);
+  const { homeData, loading, error, refreshing, onRefresh } = useHomeData(token!);
 
   const handleMediaPress = useCallback((item: MediaItem) => {
     if (item.media_type === 'movie') {

@@ -118,13 +118,7 @@ const MovieDetailsScreen: React.FC = () => {
   const handleVideoPress = useCallback((video: Video) => {
     const videoUrl = getVideoUrl(video);
     if (videoUrl) {
-      Linking.canOpenURL(videoUrl).then(supported => {
-        if (supported) {
-          Linking.openURL(videoUrl);
-        } else {
-          Alert.alert("Cannot open video", "Your device cannot open this video URL.");
-        }
-      });
+      Linking.openURL(videoUrl);
     }
   }, []);
 
@@ -139,13 +133,7 @@ const MovieDetailsScreen: React.FC = () => {
 
   // Handle review link press
   const handleReviewLinkPress = useCallback((url: string) => {
-    Linking.canOpenURL(url).then(supported => {
-      if (supported) {
-        Linking.openURL(url);
-      } else {
-        Alert.alert("Cannot open URL", "Your device cannot open this web page.");
-      }
-    });
+    Linking.openURL(url);
   }, []);
 
   // Get videos from movieDetails using useMemo to avoid unnecessary re-renders

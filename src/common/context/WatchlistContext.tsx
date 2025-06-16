@@ -93,6 +93,7 @@ export const WatchlistContextProvider: React.FC<WatchlistContextProviderProps> =
     status: WatchlistItemStatus = WatchlistItemStatus.PLANNED,
     scheduledAt: string | null = null
   ): Promise<boolean> => {
+    setIsLoading(true);
     const targetWatchlistId = watchlistId || selectedWatchlistId;
 
     if (!token || !targetWatchlistId) {
@@ -120,9 +121,13 @@ export const WatchlistContextProvider: React.FC<WatchlistContextProviderProps> =
         );
         return true;
       }
+      setError('Failed to add item to watchlist');
       return false;
     } catch (err) {
+      setError('Failed to add item to watchlist');
       return false;
+    } finally {
+      setIsLoading(false);
     }
   };
 

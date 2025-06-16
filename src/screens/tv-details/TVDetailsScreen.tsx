@@ -15,7 +15,6 @@ import {
 } from 'react-native';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { ChevronLeft, Star, Users, Clock, Calendar, Globe, Bookmark } from 'lucide-react-native';
-import { useTheme } from '../../common/context/ThemeContext';
 import { MediaItem } from '../../types/media';
 import {
   TVDetails,
@@ -42,6 +41,7 @@ import { WatchlistModal } from '../../common/components/watchlist';
 import { TvDetailsSkeletonScreen, WatchProviderSection } from './components';
 import { Header } from '../../common/components/header';
 import { ErrorScreen } from '../../common/components/errorScreen';
+import { useTheme } from '../../common/context/ThemeContext';
 
 type TVDetailsScreenRouteProp = RouteProp<RootStackParamList, 'TVShowDetail'>;
 
@@ -117,13 +117,7 @@ const TVDetailsScreen: React.FC = () => {
   const handleVideoPress = useCallback((video: Video) => {
     const videoUrl = getVideoUrl(video);
     if (videoUrl) {
-      Linking.canOpenURL(videoUrl).then(supported => {
-        if (supported) {
-          Linking.openURL(videoUrl);
-        } else {
-          Alert.alert("Cannot open video", "Your device cannot open this video URL.");
-        }
-      });
+      Linking.openURL(videoUrl);
     }
   }, []);
 
@@ -138,13 +132,7 @@ const TVDetailsScreen: React.FC = () => {
 
   // Handle review link press
   const handleReviewLinkPress = useCallback((url: string) => {
-    Linking.canOpenURL(url).then(supported => {
-      if (supported) {
-        Linking.openURL(url);
-      } else {
-        Alert.alert("Cannot open URL", "Your device cannot open this web page.");
-      }
-    });
+    Linking.openURL(url);
   }, []);
 
   // Get videos from tvDetails using useMemo to avoid unnecessary re-renders
