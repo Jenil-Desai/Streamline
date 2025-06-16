@@ -6,7 +6,6 @@ import { useTheme } from '../../context/ThemeContext';
 import { useWatchlist } from '../../context/WatchlistContext';
 import { font } from '../../utils/font-family';
 import { Input } from '../input';
-import EmojiSelector from 'react-native-emoji-selector';
 
 interface AddWatchlistDialogProps {
   visible: boolean;
@@ -23,7 +22,7 @@ const AddWatchlistDialog: React.FC<AddWatchlistDialogProps> = ({
   const { createNewWatchlist } = useWatchlist();
 
   const [name, setName] = useState('');
-  const [watchlistEmoji, setWatchEmoji] = useState('🔖');
+  const [watchlistEmoji, _setWatchEmoji] = useState('🔖');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -122,16 +121,6 @@ const AddWatchlistDialog: React.FC<AddWatchlistDialogProps> = ({
             editable={!loading}
           />
 
-          <View style={[styles.input, { height: 150, borderWidth: 1, borderColor: theme.primary, borderRadius: 8, padding: 10 }]}>
-            <EmojiSelector
-              onEmojiSelected={emoji => setWatchEmoji(emoji)}
-              columns={8}
-              showHistory={false}
-              showSectionTitles={false}
-              showTabs={false}
-            />
-          </View>
-
           <View style={styles.buttonRow}>
             <Button
               text="Cancel"
@@ -192,6 +181,13 @@ const styles = StyleSheet.create({
   },
   loader: {
     marginVertical: 16,
+  },
+  emojiInput: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderRadius: 8,
+    padding: 12
   },
   buttonRow: {
     flexDirection: 'row',
