@@ -128,6 +128,7 @@ export const WatchlistContextProvider: React.FC<WatchlistContextProviderProps> =
       return false;
     } finally {
       setIsLoading(false);
+      setError(null);
     }
   };
 

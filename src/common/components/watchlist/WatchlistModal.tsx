@@ -73,24 +73,6 @@ const WatchlistModal: React.FC<WatchlistModalProps> = ({
     }
   };
 
-  if (error) {
-    return (
-      <Modal
-        visible={visible}
-        transparent={true}
-        animationType="slide"
-        onRequestClose={onClose}
-      >
-        <ErrorScreen
-          message={error}
-          actionText="Close"
-          onAction={onClose}
-          theme={theme}
-        />
-      </Modal>
-    )
-  }
-
   return (
     <Modal
       visible={visible}
@@ -193,6 +175,12 @@ const WatchlistModal: React.FC<WatchlistModalProps> = ({
               onChange={handleDateChange}
               minimumDate={new Date()}
             />
+          )}
+
+          {error && (
+            <TouchableOpacity style={[styles.addButton, { borderColor: theme.error, borderWidth: 1, backgroundColor: `${theme.error}50` }]}>
+              <Text style={styles.addButtonText}>{error}</Text>
+            </TouchableOpacity>
           )}
 
           {/* Add Button */}
