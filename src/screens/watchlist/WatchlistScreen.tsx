@@ -37,7 +37,7 @@ export default function WatchlistScreen() {
     >
       <View style={styles.watchlistContent}>
         <View style={[styles.iconContainer, { backgroundColor: isDark ? theme.primaryDark : theme.primaryLight }]}>
-          <BookMarked size={22} color={theme.text} />
+          <Text style={{ fontSize: 24 }}>{item.emoji}</Text>
         </View>
         <View style={styles.watchlistTextContainer}>
           <Text style={[styles.watchlistName, { color: theme.text }]} numberOfLines={1}>

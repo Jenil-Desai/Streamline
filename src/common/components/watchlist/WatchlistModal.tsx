@@ -15,7 +15,7 @@ import { ThemeColors } from '../../context/ThemeContext';
 import { useWatchlist } from '../../context/WatchlistContext';
 import { MediaItem } from '../../../types/media';
 import { WatchlistItemStatus, MediaTypeEnum } from '../../../types/user/watchlistItem';
-import { ErrorScreen } from '../errorScreen';
+import { Input } from '../input';
 
 interface WatchlistModalProps {
   visible: boolean;
@@ -35,6 +35,7 @@ const WatchlistModal: React.FC<WatchlistModalProps> = ({
   const [status, setStatus] = useState<WatchlistItemStatus>(WatchlistItemStatus.PLANNED);
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [scheduledDate, setScheduledDate] = useState<Date | null>(null);
+  const [note, setNote] = useState('');
 
   // Reset state when modal opens
   useEffect(() => {
@@ -57,7 +58,8 @@ const WatchlistModal: React.FC<WatchlistModalProps> = ({
       mediaType,
       selectedWatchlistId || undefined,
       status,
-      scheduledDateString
+      scheduledDateString,
+      note
     );
 
     if (success) {
@@ -176,6 +178,9 @@ const WatchlistModal: React.FC<WatchlistModalProps> = ({
               minimumDate={new Date()}
             />
           )}
+
+          <Text style={[styles.sectionTitle, { color: theme.text }]}>Note (Optional)</Text>
+          <Input containerStyle={{ marginTop: 8 }} label='Note' value={note} onChangeText={setNote} />
 
           {error && (
             <TouchableOpacity style={[styles.addButton, { borderColor: theme.error, borderWidth: 1, backgroundColor: `${theme.error}50` }]}>

@@ -78,6 +78,9 @@ export const useWatchlistItems = ({ watchlistId }: UseWatchlistItemsProps) => {
       case WatchlistItemStatus.IN_PROGRESS:
         return 'In Progress';
       case WatchlistItemStatus.PLANNED:
+        return 'Planned';
+      case WatchlistItemStatus.DROPPED:
+        return 'Dropped';
       default:
         return 'Planned';
     }
@@ -90,6 +93,9 @@ export const useWatchlistItems = ({ watchlistId }: UseWatchlistItemsProps) => {
       case WatchlistItemStatus.IN_PROGRESS:
         return theme.info;
       case WatchlistItemStatus.PLANNED:
+        return theme.primary;
+      case WatchlistItemStatus.DROPPED:
+        return theme.error;
       default:
         return theme.warning;
     }
