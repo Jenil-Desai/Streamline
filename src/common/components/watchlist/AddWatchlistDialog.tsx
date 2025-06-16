@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { Modal, View, Text, StyleSheet, ActivityIndicator, TouchableOpacity, Alert, Keyboard } from 'react-native';
+import { Modal, View, Text, StyleSheet, TouchableOpacity, Alert, Keyboard } from 'react-native';
 import { X } from 'lucide-react-native';
 import Button from '../buttons/Button';
 import { useTheme } from '../../context/ThemeContext';
 import { useWatchlist } from '../../context/WatchlistContext';
 import { font } from '../../utils/font-family';
 import { Input } from '../input';
+import EmojiSelector from 'react-native-emoji-selector';
 
 interface AddWatchlistDialogProps {
   visible: boolean;
@@ -22,6 +23,7 @@ const AddWatchlistDialog: React.FC<AddWatchlistDialogProps> = ({
   const { createNewWatchlist } = useWatchlist();
 
   const [name, setName] = useState('');
+  const [watchlistEmoji, setWatchEmoji] = useState('🔖');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -31,12 +33,17 @@ const AddWatchlistDialog: React.FC<AddWatchlistDialogProps> = ({
       return;
     }
 
+    if (!watchlistEmoji.trim()) {
+      setError('Please select an emoji for the watchlist.');
+      return;
+    }
+
     Keyboard.dismiss();
     setLoading(true);
     setError(null);
 
     try {
-      const response = await createNewWatchlist(name.trim());
+      const response = await createNewWatchlist(name.trim(), watchlistEmoji.trim());
       if (response.success && response.watchlist) {
         setName('');
         if (onCreated) { onCreated(response.watchlist); }
@@ -114,28 +121,35 @@ const AddWatchlistDialog: React.FC<AddWatchlistDialogProps> = ({
             onSubmitEditing={name.trim() ? handleCreate : undefined}
             editable={!loading}
           />
-          {loading ? (
-            <ActivityIndicator size="large" color={theme.primary} style={styles.loader} />
-          ) : (
-            <View style={styles.buttonRow}>
-              <Button
-                text="Cancel"
-                variant="ghost"
-                onClick={handleClose}
-                fullWidth={false}
-                style={styles.button}
-                disabled={loading}
-              />
-              <Button
-                text="Create"
-                variant="primary"
-                onClick={handleCreate}
-                fullWidth={false}
-                style={[styles.button, styles.createButton]}
-                disabled={loading || !name.trim()}
-              />
-            </View>
-          )}
+
+          <View style={[styles.input, { height: 150, borderWidth: 1, borderColor: theme.primary, borderRadius: 8, padding: 10 }]}>
+            <EmojiSelector
+              onEmojiSelected={emoji => setWatchEmoji(emoji)}
+              columns={8}
+              showHistory={false}
+              showSectionTitles={false}
+              showTabs={false}
+            />
+          </View>
+
+          <View style={styles.buttonRow}>
+            <Button
+              text="Cancel"
+              variant="ghost"
+              onClick={handleClose}
+              fullWidth={false}
+              style={styles.button}
+              disabled={loading}
+            />
+            <Button
+              text={loading ? "Creating" : "Create"}
+              variant="primary"
+              onClick={handleCreate}
+              fullWidth={false}
+              style={[styles.button, styles.createButton]}
+              disabled={loading || !name.trim()}
+            />
+          </View>
         </View>
       </View>
     </Modal>
@@ -183,7 +197,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'flex-end',
     gap: 12,
-    marginTop: 8,
+    marginTop: 40,
   },
   button: {
     minWidth: 90,

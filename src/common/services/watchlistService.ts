@@ -38,6 +38,7 @@ export const getUserWatchlists = async (
  */
 export const createWatchlist = async (
   name: string,
+  emoji: string,
   token: string | null
 ): Promise<{ success: boolean; watchlist?: Watchlist; error?: string }> => {
   try {
@@ -47,7 +48,7 @@ export const createWatchlist = async (
 
     const response = await axios.post(
       `${BASE_URL}/watchlists`,
-      { name },
+      { name, emoji },
       {
         headers: { Authorization: `Bearer ${token}` },
       }
@@ -134,7 +135,8 @@ export const addToWatchlist = async (
   mediaType: MediaTypeEnum,
   token: string | null,
   status: WatchlistItemStatus = WatchlistItemStatus.PLANNED,
-  scheduledAt: string | null = null
+  scheduledAt: string | null = null,
+  note: string | null = null
 ): Promise<{ success: boolean; item?: WatchlistItem; error?: string }> => {
   try {
     if (!token) {
@@ -145,6 +147,7 @@ export const addToWatchlist = async (
       tmdbId,
       mediaType,
       status,
+      note,
       ...(scheduledAt && { scheduledAt }),
     };
 

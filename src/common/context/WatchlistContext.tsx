@@ -15,12 +15,13 @@ interface WatchlistContextType {
     mediaType: MediaTypeEnum,
     watchlistId?: string,
     status?: WatchlistItemStatus,
-    scheduledAt?: string | null
+    scheduledAt?: string | null,
+    note?: string | null
   ) => Promise<boolean>;
   removeItemFromWatchlist: (item: MediaItem, mediaType: MediaTypeEnum, watchlistId?: string) => Promise<boolean>;
   selectWatchlist: (watchlistId: string) => void;
   refreshWatchlists: () => Promise<void>;
-  createNewWatchlist: (name: string) => Promise<{ success: boolean; watchlist?: any; error?: string }>;
+  createNewWatchlist: (name: string, emoji: string) => Promise<{ success: boolean; watchlist?: any; error?: string }>;
   updateWatchlist: (id: string, name: string) => Promise<{ success: boolean; watchlist?: any; error?: string }>;
   deleteWatchlist: (id: string) => Promise<{ success: boolean; message?: string; error?: string }>;
 }
@@ -91,7 +92,8 @@ export const WatchlistContextProvider: React.FC<WatchlistContextProviderProps> =
     mediaType: MediaTypeEnum,
     watchlistId?: string,
     status: WatchlistItemStatus = WatchlistItemStatus.PLANNED,
-    scheduledAt: string | null = null
+    scheduledAt: string | null = null,
+    note: string | null = null
   ): Promise<boolean> => {
     setIsLoading(true);
     const targetWatchlistId = watchlistId || selectedWatchlistId;
@@ -107,7 +109,8 @@ export const WatchlistContextProvider: React.FC<WatchlistContextProviderProps> =
         mediaType,
         token,
         status,
-        scheduledAt
+        scheduledAt,
+        note
       );
 
       if (response.success && response.item) {
@@ -170,13 +173,13 @@ export const WatchlistContextProvider: React.FC<WatchlistContextProviderProps> =
     }
   };
 
-  const createNewWatchlist = async (name: string) => {
+  const createNewWatchlist = async (name: string, emoji: string) => {
     if (!token) {
       return { success: false, error: 'You must be logged in to create a watchlist' };
     }
 
     try {
-      const response = await createWatchlist(name, token);
+      const response = await createWatchlist(name, emoji, token);
 
       if (response.success && response.watchlist) {
         // Add to local state

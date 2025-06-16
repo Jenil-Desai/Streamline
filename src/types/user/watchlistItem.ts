@@ -4,6 +4,7 @@ export enum WatchlistItemStatus {
   PLANNED = 'PLANNED',
   WATCHED = 'WATCHED',
   IN_PROGRESS = 'IN_PROGRESS',
+  DROPPED = 'DROPPED',
 }
 
 export enum MediaTypeEnum {
@@ -17,6 +18,7 @@ export interface WatchlistItem {
   mediaType: MediaTypeEnum;
   status: WatchlistItemStatus;
   scheduledAt: string | null;
+  note: string | null;
   watchlistId: string;
   createdAt: string;
   media_details: MediaItem;

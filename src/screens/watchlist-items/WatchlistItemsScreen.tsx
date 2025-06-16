@@ -7,7 +7,7 @@ import {
   RefreshControl
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { ChevronLeft, Film, Tv, Calendar, Clock, CheckCircle, Circle, Play } from 'lucide-react-native';
+import { ChevronLeft, Film, Tv, Calendar, Clock, CheckCircle, Circle, Play, Paperclip } from 'lucide-react-native';
 import moment from 'moment';
 import { useRoute, RouteProp } from '@react-navigation/native';
 
@@ -57,6 +57,9 @@ export default function WatchlistItemsScreen() {
       case WatchlistItemStatus.IN_PROGRESS:
         return <Play size={14} color={theme.info} />;
       case WatchlistItemStatus.PLANNED:
+        return <Circle size={14} color={theme.primary} />;
+      case WatchlistItemStatus.DROPPED:
+        return <Circle size={14} color={theme.error} />;
       default:
         return <Circle size={14} color={theme.warning} />;
     }
@@ -98,6 +101,14 @@ export default function WatchlistItemsScreen() {
                 <Calendar size={13} color={theme.textSecondary} style={styles.infoIcon} />
                 <Text style={[styles.infoText, { color: theme.textSecondary, marginRight: 10 }]}>
                   {moment(item.scheduledAt).format('MMM DD, YYYY')}
+                </Text>
+              </View>
+            )}
+            {item.note && (
+              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <Paperclip size={13} color={theme.textSecondary} style={styles.infoIcon} />
+                <Text style={[styles.infoText, { color: theme.textSecondary, marginRight: 10 }]}>
+                  {item.note}
                 </Text>
               </View>
             )}
