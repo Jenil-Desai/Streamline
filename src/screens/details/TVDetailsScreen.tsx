@@ -357,7 +357,7 @@ const TVDetailsScreen: React.FC = () => {
         <View style={styles.overviewContainer}>
           <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
             <SectionHeader title="Overview" theme={theme} />
-            <TouchableOpacity>
+            <TouchableOpacity onPress={() => Linking.openURL(tvDetails.homepage)}>
               <Badge
                 key={'overview'}
                 label={'Watch Now'}

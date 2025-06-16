@@ -24,6 +24,7 @@ import { WatchlistItem, WatchlistItemStatus, MediaTypeEnum, WatchlistItemsRespon
 import { COLORS } from '../../common/constants/colors';
 import WatchlistItemsSkeletonScreen from './WatchlistItemsSkeletonScreen';
 import { WatchlistItemsEmpty, WatchlistItemsError } from '../../common/components/watchlist';
+import { NavigationProps } from '../../types/navigation';
 
 // Define the route params type
 type WatchlistItemsParamList = {
@@ -37,7 +38,7 @@ export default function WatchlistItemsScreen() {
   const { theme, isDark } = useTheme();
   const { token } = useAuth();
   const route = useRoute<RouteProp<WatchlistItemsParamList, 'WatchlistItems'>>();
-  const navigation = useNavigation();
+  const navigation = useNavigation<NavigationProps>();
   const { id: watchlistId, name: watchlistName } = route.params;
 
   const [items, setItems] = useState<WatchlistItem[]>([]);
@@ -94,7 +95,11 @@ export default function WatchlistItemsScreen() {
   };
 
   const handleItemPress = (item: MediaItem) => {
-    console.log('Navigate to media details:', item.id);
+    if (item.media_type === "movie") {
+      navigation.navigate('MovieDetail', { id: item.id });
+    } else {
+      navigation.navigate('TVShowDetail', { id: item.id });
+    }
   };
 
   const getStatusIcon = (status: WatchlistItemStatus) => {

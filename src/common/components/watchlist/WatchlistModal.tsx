@@ -44,10 +44,10 @@ const WatchlistModal: React.FC<WatchlistModalProps> = ({
     }
   }, [visible, item]);
 
-  if (!item) return null;
+  if (!item) { return null; }
 
   const handleAddToWatchlist = async () => {
-    if (!item) return;
+    if (!item) { return; }
 
     const mediaType = item.media_type === 'movie' ? MediaTypeEnum.MOVIE : MediaTypeEnum.TV;
     const scheduledDateString = scheduledDate ? scheduledDate.toISOString() : null;

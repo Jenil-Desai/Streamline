@@ -41,6 +41,7 @@ import WatchProviderSection from '../../components/WatchProviders/WatchProviderS
 interface MovieDetails {
   id: number;
   title: string;
+  homepage: string;
   original_title: string;
   overview: string;
   poster_path: string | null;
@@ -361,7 +362,7 @@ const MovieDetailsScreen: React.FC = () => {
         <View style={styles.overviewContainer}>
           <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
             <SectionHeader title="Overview" theme={theme} />
-            <TouchableOpacity>
+            <TouchableOpacity onPress={() => Linking.openURL(movieDetails.homepage)}>
               <Badge
                 key={'overview'}
                 label={'Watch Now'}

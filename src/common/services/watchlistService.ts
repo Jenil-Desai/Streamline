@@ -158,7 +158,7 @@ export const addToWatchlist = async (
 
     return response.data;
   } catch (error) {
-    console.error('Error in addToWatchlist:', error);
+    console.error('Error in addToWatchlist:', error.message);
     return { success: false, error: 'Failed to add item to watchlist' };
   }
 };

@@ -82,7 +82,11 @@ export default function CategoryListScreen() {
   }, [loadingMore, page, totalPages, loadCategoryData]);
 
   const handleMediaPress = useCallback((item: MediaItem) => {
-    navigation.navigate('TVShowDetail', { id: item.id });
+    if (item.media_type === 'movie') {
+      navigation.navigate('MovieDetail', { id: item.id });
+    } else {
+      navigation.navigate('TVShowDetail', { id: item.id });
+    }
   }, [navigation]);
 
   return (
